@@ -28,6 +28,20 @@ operation, not taking on a support desk.
 If your club depends on it, treat it like infrastructure you own: read the docs, keep your own
 backups, and plan for self-reliance.
 
+## Who's running it
+
+Clubs and groups carrying Ham.Live forward on their own instances. If the hosted service was
+your home, this is where the community is keeping it going.
+
+- **[netcontrol.live](https://netcontrol.live)** — a public, community-hosted instance run by
+  **Bucky (W0SUN)** and **Wayne (N0AD)**, who are putting real resources into keeping Ham.Live on
+  the air. Open for any operator to join.
+- **[N5SAC Ham Club](https://www.sachseraces.org/ham-chat/)** (Sachse, Texas) — standing up its own
+  instance, "N5SAC Ham Chat," for their club nets.
+
+Running an instance, or working on one? **[Open a pull request](CONTRIBUTING.md)** to add your
+group here.
+
 ## Features
 
 - **Real-time net participation** — live presence, ordered station lists, and interactions
