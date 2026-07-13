@@ -32,6 +32,17 @@ conf = _.merge(YAML.parse(commonConfigf), YAML.parse(baseConfigf));
 
 The files `server/dist/.env-development` and `server/dist/.env-production` exist in the repository as reference stubs — they are **not loaded by the application**. Only the root `.env` (one level above the repository root) is loaded by `configLib.js`. Do not expect `NODE_ENV`-based `.env` switching; it does not happen.
 
+### Email, analytics, and support-link variables
+
+Email supports two providers, selected by which variables are present: SendGrid
+(`SENDGRID_API_KEY`) or any SMTP relay (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`,
+`SMTP_SECURE`). SendGrid wins when both are configured. Over SMTP, the Net Close Report is
+rendered locally from `server/dist/views/emails/netCloseReport.ejs` instead of a SendGrid
+dynamic template. Analytics likewise supports two providers behind `ANALYTICS_ENABLED`:
+Plausible (`PLAUSIBLE_DOMAIN` + `PLAUSIBLE_SRC`, preferred when configured) or Google
+Analytics (`GOOGLE_ANALYTICS_ID`). `SUPPORT_URL` / `SUPPORT_LABEL` render an optional
+donation/support link in the footer. See `.env.example` for details.
+
 ### Configuration access in code
 
 Configuration is a CommonJS module:
