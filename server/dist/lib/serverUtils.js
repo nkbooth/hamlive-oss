@@ -225,6 +225,8 @@ const addServerInfo = async (req, res, next) => {
                 googleAnalyticsId: conf.google_analytics_id || '',
                 plausibleDomain: conf.plausible_domain || '',
                 plausibleSrc: conf.plausible_src || '',
+                supportUrl: conf.support_url || '',
+                supportLabel: conf.support_label || '',
                 ts: Date.now(),
                 requestRateFactor,
                 httpClientTimeout,

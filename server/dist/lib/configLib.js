@@ -51,6 +51,8 @@ const fromEnv = {
     google_analytics_id: process.env.GOOGLE_ANALYTICS_ID,
     plausible_domain: process.env.PLAUSIBLE_DOMAIN,
     plausible_src: process.env.PLAUSIBLE_SRC,
+    support_url: process.env.SUPPORT_URL,
+    support_label: process.env.SUPPORT_LABEL
 };
 
 for (const [key, value] of Object.entries(fromEnv)) {
