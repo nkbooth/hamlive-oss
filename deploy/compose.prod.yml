@@ -1,0 +1,48 @@
+# hamlive-oss production compose — runs on gondor under rootless podman.
+#
+# Deployed by .github/workflows/deploy.yml to ~/services/hamlive/ as compose.yml,
+# next to a .env rendered from deploy/.env.production.tpl. That .env serves double
+# duty: compose interpolates ${IMAGE_TAG} from it, and env_file injects it into
+# the app container (no .env file exists inside the container).
+#
+# The app port is published on all interfaces; exposure control is the host
+# firewall's job (rootless podman does not bypass firewalld the way rootful
+# docker DNAT does). Caddy on the `routing` tailnet host reverse-proxies
+# https://nets.n1cck.radio -> gondor:3000 over the tailnet.
+
+services:
+    app:
+        image: ghcr.io/nkbooth/hamlive-oss:${IMAGE_TAG:-latest}
+        container_name: hamlive-app
+        restart: unless-stopped
+        env_file: .env
+        depends_on:
+            mongo:
+                condition: service_healthy
+        ports:
+            - '3000:3000'
+
+    mongo:
+        image: mongo:7
+        container_name: hamlive-mongo
+        restart: unless-stopped
+        command: ['--replSet', 'rs0', '--bind_ip_all']
+        # No published ports: mongo is reachable only on the compose network.
+        volumes:
+            - hamlive-mongo-data:/data/db
+        healthcheck:
+            # Initiate the single-node replica set once the node is up (no-op once
+            # initiated). Change streams — which power the app's real-time SSE —
+            # require a replica set. Keeping the member host as localhost:27017 is
+            # correct because the app connects with ?directConnection=true and
+            # never uses the replica-set host list.
+            test: >
+                mongosh --quiet --eval
+                "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}) }"
+            interval: 10s
+            timeout: 10s
+            start_period: 20s
+            retries: 10
+
+volumes:
+    hamlive-mongo-data:
