@@ -184,8 +184,7 @@ const addServerInfo = async (req, res, next) => {
         const { callSign = null, displayName = null, id: userId = null, newAccount = false } = req.user || {};
         const { gracePeriodDays, ads, requestRateFactor, httpClientTimeout, chat, analytics, awayInMs } =
             res.locals.flexOpts || {};
-        const { applogname: appLogName, cmd_help_url: cmdHelpUrl = '', app_name: appName = 'Ham.Live' } =
-            conf || {};
+        const { applogname: appLogName, cmd_help_url: cmdHelpUrl = '', app_name: appName = 'Ham.Live' } = conf || {};
         const googleAuth = Boolean(conf.google_client_id && conf.google_client_secret);
         const chatEnabled = Boolean(conf.stream_api_key && conf.stream_api_secret);
         const emailEnabled = Boolean(conf.sendgrid_api_key);
@@ -193,7 +192,12 @@ const addServerInfo = async (req, res, next) => {
         // Ads & analytics are OFF by default in the community edition; they only
         // run when explicitly enabled AND a provider ID is configured.
         const adsEnabled = Boolean(conf.ads_enabled) && Boolean(conf.adplugg_access_code);
-        const analyticsEnabled = Boolean(conf.analytics_enabled) && Boolean(conf.google_analytics_id);
+        // Two supported analytics providers: Plausible (preferred when configured;
+        // cookieless, self-hostable) and Google Analytics. Either satisfies the
+        // "provider ID is configured" half of the enablement rule.
+        const plausibleConfigured = Boolean(conf.plausible_domain) && Boolean(conf.plausible_src);
+        const analyticsEnabled =
+            Boolean(conf.analytics_enabled) && (plausibleConfigured || Boolean(conf.google_analytics_id));
 
         let okToAdvertise = false;
 
@@ -219,6 +223,8 @@ const addServerInfo = async (req, res, next) => {
                 analyticsEnabled,
                 adPluggAccessCode: conf.adplugg_access_code || '',
                 googleAnalyticsId: conf.google_analytics_id || '',
+                plausibleDomain: conf.plausible_domain || '',
+                plausibleSrc: conf.plausible_src || '',
                 ts: Date.now(),
                 requestRateFactor,
                 httpClientTimeout,

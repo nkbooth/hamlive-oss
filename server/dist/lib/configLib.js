@@ -48,7 +48,9 @@ const fromEnv = {
     // Ads & analytics provider IDs (optional; only used when the matching
     // feature is enabled below). Use your OWN accounts — never the project's.
     adplugg_access_code: process.env.ADPLUGG_ACCESS_CODE,
-    google_analytics_id: process.env.GOOGLE_ANALYTICS_ID
+    google_analytics_id: process.env.GOOGLE_ANALYTICS_ID,
+    plausible_domain: process.env.PLAUSIBLE_DOMAIN,
+    plausible_src: process.env.PLAUSIBLE_SRC,
 };
 
 for (const [key, value] of Object.entries(fromEnv)) {

@@ -9,8 +9,12 @@
 <!-- AdPlugg Snippet Omitted -->
 <% } %>
 <% if (server.analyticsEnabled && user.analytics !== false) { %>
-<%- include('./featureGoogleAnalytics') %>
+<% if (server.plausibleDomain && server.plausibleSrc) { %>
+<%- include('./featurePlausible') %>
 <% } else { %>
-<!-- Google Analytics Omitted -->
+<%- include('./featureGoogleAnalytics') %>
+<% } %>
+<% } else { %>
+<!-- Analytics Snippet Omitted -->
 <% } %>
 <!--End: pageTopFeatures.ejs-->
