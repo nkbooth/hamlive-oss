@@ -2,24 +2,77 @@
 
 const { getUserProfile } = require('../models/userProfile');
 const sgMail = require('@sendgrid/mail');
+const nodemailer = require('nodemailer');
+const ejs = require('ejs');
+const path = require('path');
 const { conf } = require('../lib/configLib');
 
-// Email delivery is optional. When SENDGRID_API_KEY is absent, messages are
-// logged to the server console instead of being sent (see INSTALL.md,
-// "Local test drive"). The sender address is configurable via EMAIL_FROM and
-// must be a verified sender in your SendGrid account when email is enabled.
-const emailEnabled = Boolean(conf.sendgrid_api_key);
-const EMAIL_FROM =
-    process.env.EMAIL_FROM || conf.email_from || `${conf.app_name || 'Ham.Live'} <no-reply@example.com>`;
-if (emailEnabled) {
+// Email delivery is optional and supports two providers: SendGrid
+// (SENDGRID_API_KEY) or any SMTP relay (SMTP_HOST and friends). SendGrid wins
+// when both are configured. With neither, messages are logged to the server
+// console instead of being sent (see INSTALL.md, "Local test drive"). The
+// sender address is configurable via EMAIL_FROM and must be a sender your
+// provider accepts (a verified sender, for SendGrid).
+const sendgridEnabled = Boolean(conf.sendgrid_api_key);
+const smtpEnabled = !sendgridEnabled && Boolean(conf.smtp_host);
+const emailEnabled = sendgridEnabled || smtpEnabled;
+const EMAIL_PROVIDER = sendgridEnabled ? 'SendGrid' : 'SMTP';
+const EMAIL_FROM = process.env.EMAIL_FROM || conf.email_from || `${conf.app_name || 'Ham.Live'} <no-reply@example.com>`;
+if (sendgridEnabled) {
     sgMail.setApiKey(conf.sendgrid_api_key);
 }
+const smtpTransporter = smtpEnabled
+    ? nodemailer.createTransport({
+          host: conf.smtp_host,
+          port: Number(conf.smtp_port) || 587,
+          // secure=true means implicit TLS (port 465); on 587 the transport
+          // upgrades via STARTTLS when the server offers it.
+          secure: String(conf.smtp_secure) === 'true',
+          auth: conf.smtp_user ? { user: conf.smtp_user, pass: conf.smtp_pass } : undefined
+      })
+    : null;
 // SendGrid dynamic-template ID for the Net Close Report (the post-net log emailed
 // to the net owner when a net closes). Self-hosters: create your own template from
 // docs/email-templates/net-close-report.html and set SENDGRID_NET_CLOSE_TEMPLATE_ID.
 // When unset, the close-report email is skipped (all other features still work).
-const NET_CLOSE_TEMPLATE_ID =
-    process.env.SENDGRID_NET_CLOSE_TEMPLATE_ID || conf.sendgrid_net_close_template_id || '';
+const NET_CLOSE_TEMPLATE_ID = process.env.SENDGRID_NET_CLOSE_TEMPLATE_ID || conf.sendgrid_net_close_template_id || '';
+
+// --- SMTP delivery helpers -------------------------------------------------
+
+const renderTemplatedEmail = async emailData => {
+    // The Net Close Report is the only dynamic-template email in the codebase.
+    // SendGrid renders it server-side from the operator's template; over SMTP
+    // the same dynamic_template_data is rendered locally from the EJS
+    // equivalent of docs/email-templates/net-close-report.html.
+    const templatePath = path.resolve(__dirname, '../views/emails/netCloseReport.ejs');
+    return await ejs.renderFile(templatePath, emailData.dynamic_template_data);
+};
+
+const smtpMessageFromEmailData = async (emailData, recipient) => {
+    const html = 'templateId' in emailData ? await renderTemplatedEmail(emailData) : emailData.html;
+
+    return {
+        from: emailData.from || EMAIL_FROM,
+        to: recipient,
+        subject: emailData.subject || emailData.dynamic_template_data?.subject || '',
+        html,
+        // SendGrid attachment shape (base64 content/filename/type) → nodemailer's
+        // (Buffer content/filename/contentType).
+        attachments: (emailData.attachments || []).map(a => ({
+            filename: a.filename,
+            content: Buffer.from(a.content, 'base64'),
+            contentType: a.type
+        }))
+    };
+};
+
+const sendViaSmtp = async (emailData, validRecipients) => {
+    // One message per recipient, mirroring sgMail.sendMultiple(): recipients
+    // must never see each other's addresses.
+    for (const recipient of validRecipients) {
+        await smtpTransporter.sendMail(await smtpMessageFromEmailData(emailData, recipient));
+    }
+};
 const humanizeDuration = require('humanize-duration');
 const { getFlexOptionsByUser, fetchChatLog } = require('../lib/serverUtils');
 const { logger } = require('./logger');
@@ -109,14 +162,14 @@ class EmailBase {
 
     async sendEmailWithRetry(emailData, validRecipients) {
         if (!emailEnabled) {
-            const subject =
-                emailData.subject || emailData.dynamic_template_data?.subject || '(templated email)';
+            const subject = emailData.subject || emailData.dynamic_template_data?.subject || '(templated email)';
             logger.info(`[email disabled] Would send "${subject}" to ${validRecipients.join(', ')}`);
             return;
         }
-        if ('templateId' in emailData && !emailData.templateId) {
-            const skipSubject =
-                emailData.dynamic_template_data?.subject || emailData.subject || '(templated email)';
+        // Only SendGrid needs a provider-side template; SMTP renders templated
+        // emails locally (see renderTemplatedEmail).
+        if (sendgridEnabled && 'templateId' in emailData && !emailData.templateId) {
+            const skipSubject = emailData.dynamic_template_data?.subject || emailData.subject || '(templated email)';
             logger.warn(
                 `[email] Skipping "${skipSubject}" — no SendGrid template configured. ` +
                     `Set SENDGRID_NET_CLOSE_TEMPLATE_ID (see docs/email-templates/). ` +
@@ -126,14 +179,20 @@ class EmailBase {
         }
         for (let attempt = 0; attempt < 3; attempt++) {
             try {
-                await sgMail.sendMultiple(emailData);
-                logger.info(`Mail successfully sent to SendGrid for ${validRecipients.length} recipients`);
+                if (sendgridEnabled) {
+                    await sgMail.sendMultiple(emailData);
+                } else {
+                    await sendViaSmtp(emailData, validRecipients);
+                }
+                logger.info(`Mail successfully sent to ${EMAIL_PROVIDER} for ${validRecipients.length} recipients`);
                 break;
             } catch (err) {
                 if (attempt < 2) {
-                    logger.warn(`Failed to send to SendGrid on attempt ${attempt + 1}: ${err.message}. Retrying...`);
+                    logger.warn(
+                        `Failed to send to ${EMAIL_PROVIDER} on attempt ${attempt + 1}: ${err.message}. Retrying...`
+                    );
                 } else {
-                    logger.error(`Failed to send to SendGrid on final attempt: ${err.message}`);
+                    logger.error(`Failed to send to ${EMAIL_PROVIDER} on final attempt: ${err.message}`);
                     throw err;
                 }
             }

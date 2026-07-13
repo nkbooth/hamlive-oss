@@ -1,0 +1,36 @@
+<!-- hamlive-oss — MIT License. See LICENSE. -->
+<!-- Net Close Report, rendered locally when email is delivered over SMTP. -->
+<!-- EJS equivalent of the SendGrid dynamic template reference in -->
+<!-- docs/email-templates/net-close-report.html; both consume the same -->
+<!-- dynamic_template_data object built in lib/userNotification.js. -->
+<html>
+    <head>
+        <title><%= subject %></title>
+    </head>
+    <body>
+        <p><h3><a href="<%= url %>"><%= title %></a></h3></p>
+        <% if (startedAtString) { %>
+        <p>(Net Start Time: <%= startedAtString %>)</p>
+        <% } %>
+        <table style="border: 1px solid; padding: 0; border-spacing: 0;">
+            <caption>Station Info</caption>
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>CallSign</th>
+                    <th>Check-In Time</th>
+                </tr>
+            </thead>
+            <% for (const attendee of formattedAttendees) { %>
+            <tr style="<%= attendee.highlight ? 'background-color: lightgray;' : '' %>">
+                <td style="padding: 3px 6px;"><% if (attendee.role) { %>[<%= attendee.role %>]<% } %></td>
+                <td style="padding: 3px 6px;">
+                    <strong><%= attendee.callSign %></strong>
+                    <% if (attendee.sigReport) { %>(<%= attendee.sigReport %>)<% } %>
+                </td>
+                <td style="padding: 3px 6px;"><em><%= attendee.checkInTime %></em></td>
+            </tr>
+            <% } %>
+        </table>
+    </body>
+</html>

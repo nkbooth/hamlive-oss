@@ -187,7 +187,7 @@ const addServerInfo = async (req, res, next) => {
         const { applogname: appLogName, cmd_help_url: cmdHelpUrl = '', app_name: appName = 'Ham.Live' } = conf || {};
         const googleAuth = Boolean(conf.google_client_id && conf.google_client_secret);
         const chatEnabled = Boolean(conf.stream_api_key && conf.stream_api_secret);
-        const emailEnabled = Boolean(conf.sendgrid_api_key);
+        const emailEnabled = Boolean(conf.sendgrid_api_key || conf.smtp_host);
 
         // Ads & analytics are OFF by default in the community edition; they only
         // run when explicitly enabled AND a provider ID is configured.
