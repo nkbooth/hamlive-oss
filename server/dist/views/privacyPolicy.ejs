@@ -16,20 +16,88 @@
       <div class="row">
         <div class="col p-md-2 m-md-3">
           <h1 class="h3 mt-3">Privacy Policy</h1>
-
-          <div class="alert alert-warning mt-3" role="alert">
-            <strong>Operator action required.</strong> This is a placeholder. If you host this
-            application for your club or group, replace the contents of
-            <code>server/dist/views/privacyPolicy.ejs</code> with your own privacy policy describing
-            how <em>your</em> instance collects, uses, and stores member data.
-          </div>
+          <p class="text-quaternary"><small>Last updated: July 13, 2026</small></p>
 
           <p class="mt-3">
-            This open-source edition does not ship a legal privacy policy. The original hosted
-            service's policy was specific to its operator and is intentionally not included. You are
-            responsible for providing a policy appropriate to your jurisdiction and to the
-            third-party services you enable (database host, email provider, chat provider, callsign
-            lookup, geocoding, etc.).
+            This instance of <%= server.appName %> at <strong>nets.n1cck.radio</strong> is a
+            personal, non-commercial service operated by Nick Booth (N1CCK) for the amateur-radio
+            community. This policy describes what data the service collects and how it is used.
+            Questions or requests: <a href="mailto:nick@n1cck.us">nick@n1cck.us</a>.
+          </p>
+
+          <h2 class="h5 mt-4">What we collect</h2>
+          <ul>
+            <li><strong>Account information</strong> — your email address, callsign, display name,
+              and (optionally) a location you provide.</li>
+            <li><strong>Net activity</strong> — check-ins, signal reports, roles, timestamps, and
+              other records generated when you participate in a net, plus chat messages sent during
+              a net.</li>
+            <li><strong>Technical data</strong> — a signed session cookie (see the
+              <a href="/views/cookiepolicy">Cookie Policy</a>) and routine server logs (IP address,
+              request paths, timestamps) kept for security and troubleshooting.</li>
+          </ul>
+
+          <h2 class="h5 mt-4">How it is used</h2>
+          <p>
+            Solely to operate the service: signing you in, running nets, showing presence and
+            check-in lists to other participants, and sending transactional email (sign-in links
+            and net notifications). No advertising, no marketing email, and no sale or sharing of
+            personal data for commercial purposes — ever.
+          </p>
+          <p>
+            Note that net participation is inherently visible to other users: your callsign,
+            display name, and check-in activity appear to participants and followers of a net,
+            consistent with the public nature of amateur-radio operation.
+          </p>
+
+          <h2 class="h5 mt-4">Analytics</h2>
+          <p>
+            This instance uses a <strong>self-hosted</strong> Plausible Analytics server operated
+            by the same operator. It is cookieless, collects only aggregate usage statistics (page
+            views, referrers, browser family), does not track you across sites, and no analytics
+            data leaves the operator's infrastructure.
+          </p>
+
+          <h2 class="h5 mt-4">Service providers</h2>
+          <p>Limited data is shared with these processors, only as needed for the feature involved:</p>
+          <ul>
+            <li><strong>Google</strong> — only if you choose "Sign in with Google" (your Google
+              account email is used to authenticate you).</li>
+            <li><strong>GetStream (Stream.io)</strong> — real-time chat; chat messages and your
+              display identity are processed by Stream to deliver chat.</li>
+            <li><strong>QRZ.com</strong> — callsigns are looked up to enrich station profiles with
+              publicly available license data.</li>
+            <li><strong>Microsoft Azure Maps</strong> — coordinates you choose to share are
+              reverse-geocoded to a place name.</li>
+            <li><strong>Email (SMTP) relay</strong> — your email address is processed by the
+              operator's mail relay to deliver sign-in links and notifications.</li>
+          </ul>
+          <p>The database is self-hosted on the operator's own server; no managed database provider
+            receives your data.</p>
+
+          <h2 class="h5 mt-4">Retention and deletion</h2>
+          <ul>
+            <li>You can delete your account at any time from the in-app
+              <strong>Data Privacy</strong> page; deletion removes your account data from the
+              service.</li>
+            <li>Inactive accounts are flagged and automatically deleted after roughly 180 days of
+              inactivity.</li>
+            <li>Net logs (check-in records) are retained as part of a net's history and may be
+              emailed to the net owner when a net closes.</li>
+          </ul>
+
+          <h2 class="h5 mt-4">Security</h2>
+          <p>
+            The service is reachable only over HTTPS, sessions use signed HTTP-only cookies, and
+            credentials/secrets are stored in a dedicated secrets manager, not in code.
+            No internet service can guarantee absolute security; use a unique credential where
+            applicable.
+          </p>
+
+          <h2 class="h5 mt-4">Changes</h2>
+          <p>
+            Material changes to this policy will be reflected on this page with an updated date
+            above. Continued use of the service after a change constitutes acceptance.
           </p>
         </div>
       </div>
