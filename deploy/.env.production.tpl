@@ -52,7 +52,7 @@ QRZ_PASSWORD=op://hamlive-prod/qrz/password
 # ---- Analytics (self-hosted Plausible; cookieless) ----
 ANALYTICS_ENABLED=true
 PLAUSIBLE_DOMAIN=nets.n1cck.radio
-PLAUSIBLE_SRC=https://analytics.n1cck.us/js/script.js
+PLAUSIBLE_SRC=https://analytics.somuchlosing.com/js/pa-w6HNyG250i6AI9hYpqgz0.js
 
 # ---- Footer support link ----
 SUPPORT_URL=https://ko-fi.com/alatartheblue
