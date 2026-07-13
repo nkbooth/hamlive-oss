@@ -43,6 +43,13 @@ read access to it; put its token in the repo's `OP_SERVICE_ACCOUNT_TOKEN` secret
 **Tailscale admin console:** OAuth client permitted to create ephemeral `tag:ci` nodes
 (tag owner in ACL); ACL rule allowing `tag:ci → gondor:22`.
 
+⚠️ gondor answers tailnet SSH with **Tailscale SSH** (not sshd), so CI authentication is
+decided by an ACL `ssh` rule — `{"action": "accept", "src": ["tag:ci"], "dst": ["gondor"],
+"users": ["nick"]}` — not by `authorized_keys`. The `gondor-deploy` key still ships as a
+fallback (it becomes load-bearing only if Tailscale SSH is ever disabled), and the pinned
+`host-key` is the one Tailscale SSH presents; update that vault field if Tailscale SSH is
+turned off.
+
 **Google Cloud:** OAuth credentials with redirect URI
 `https://nets.n1cck.radio/auth/google/redirect`.
 
