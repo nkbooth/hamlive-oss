@@ -1,8 +1,8 @@
 # Production .env template for nets.n1cck.radio — rendered by `op inject` in CI
 # (see .github/workflows/deploy.yml) and shipped to gondor:~/services/hamlive/.env.
 #
-# op:// references resolve against the 1Password vault "hamlive-prod" using the
-# service account whose token lives in the OP_SERVICE_ACCOUNT_TOKEN GitHub secret.
+# The 1Password secret references resolve against the vault "hamlive-prod" using
+# the service account whose token lives in the OP_SERVICE_ACCOUNT_TOKEN GitHub secret.
 # This file is safe to commit: it contains references, never secret values.
 #
 # CI appends IMAGE_TAG=sha-<shortsha> at deploy time to pin the image version
