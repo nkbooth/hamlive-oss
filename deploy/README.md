@@ -26,14 +26,17 @@ to the `hamlive-prod` vault). Everything else lives in that vault:
 | `app`           | `cookie-session-key`, `magic-link-secret` | app `.env`      |
 | `smtp`          | `host`, `username`, `password`            | app `.env`      |
 | `google-oauth`  | `client-id`, `client-secret`              | app `.env`      |
-| `getstream`     | `api-key`, `api-secret`                   | app `.env`      |
 | `qrz`           | `username`, `password`                    | app `.env`      |
-| `azure-maps`    | `geo-key`                                 | app `.env`      |
 | `tailscale-ci`  | `client-id`, `client-secret`              | CI tailnet join |
 | `gondor-deploy` | `private-key`, `host-key`                 | CI ssh/scp      |
 
 `gondor-deploy/host-key` is a full `known_hosts` line (`gondor ssh-ed25519 AAAA…`).
 Rotating any secret = update the vault item, re-run the deploy workflow.
+
+GetStream chat and Azure Maps geocoding are currently disabled: their references are
+commented out in `.env.production.tpl` (both features degrade gracefully). To re-enable,
+create the vault item (`getstream`: `api-key`/`api-secret`; `azure-maps`: `geo-key`) and
+uncomment the lines.
 
 ## One-time setup checklist
 

@@ -33,16 +33,18 @@ SMTP_SECURE=false
 GOOGLE_CLIENT_ID=op://hamlive-prod/google-oauth/client-id
 GOOGLE_CLIENT_SECRET=op://hamlive-prod/google-oauth/client-secret
 
-# ---- GetStream chat ----
-STREAM_API_KEY=op://hamlive-prod/getstream/api-key
-STREAM_API_SECRET=op://hamlive-prod/getstream/api-secret
+# ---- GetStream chat (disabled for now; chat degrades gracefully) ----
+# To re-enable: create the getstream vault item, then uncomment.
+# STREAM_API_KEY=op://hamlive-prod/getstream/api-key
+# STREAM_API_SECRET=op://hamlive-prod/getstream/api-secret
 
 # ---- QRZ callsign lookup ----
 QRZ_USERNAME=op://hamlive-prod/qrz/username
 QRZ_PASSWORD=op://hamlive-prod/qrz/password
 
-# ---- Azure Maps reverse geocoding ----
-GEO_KEY=op://hamlive-prod/azure-maps/geo-key
+# ---- Azure Maps reverse geocoding (disabled for now; location resolution skipped) ----
+# To re-enable: create the azure-maps vault item, then uncomment.
+# GEO_KEY=op://hamlive-prod/azure-maps/geo-key
 
 # ---- Analytics (self-hosted Plausible; cookieless) ----
 ANALYTICS_ENABLED=true
