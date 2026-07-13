@@ -130,7 +130,13 @@ class EmailBase {
         try {
             const subject = this.getSubject();
             const emailData = this.getEmailData(validRecipients, subject);
-            this.sendEmailWithRetry(emailData, validRecipients);
+            // Fire-and-forget by design, so the returned promise MUST be
+            // caught here: an exhausted-retries rejection would otherwise be
+            // an unhandled rejection and crash the process. Email delivery is
+            // best-effort; it must never take the app down.
+            this.sendEmailWithRetry(emailData, validRecipients).catch(err =>
+                logger.error(`Email delivery failed permanently: ${err.message}`)
+            );
         } catch (err) {
             logger.error(`Failed to send mail: ${err.message}`);
             throw err;

@@ -24,10 +24,10 @@ MAGIC_LINK_SECRET=op://hamlive-prod/app/magic-link-secret
 # ---- Email (SMTP relay) ----
 EMAIL_FROM=Ham.Live @ N1CCK <no-reply@n1cck.radio>
 SMTP_HOST=op://hamlive-prod/smtp/host
-SMTP_PORT=587
+SMTP_PORT=465
 SMTP_USER=op://hamlive-prod/smtp/username
 SMTP_PASS=op://hamlive-prod/smtp/password
-SMTP_SECURE=false
+SMTP_SECURE=true
 
 # ---- Google OAuth ----
 GOOGLE_CLIENT_ID=op://hamlive-prod/google-oauth/client-id
