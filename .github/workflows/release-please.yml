@@ -1,0 +1,41 @@
+name: release-please
+
+# Semver is derived, never hand-set: release-please parses Conventional Commits
+# on main (fix → patch, feat → minor, feat!/BREAKING CHANGE → major), maintains
+# a release PR that bumps package.json + CHANGELOG.md, and — when that PR is
+# merged — tags vX.Y.Z and publishes a GitHub release. Because releases created
+# with GITHUB_TOKEN don't fire other workflows' `release` triggers, the deploy
+# is chained here via an explicit workflow_dispatch.
+
+on:
+    push:
+        branches: [main]
+
+permissions:
+    contents: write
+    pull-requests: write
+    actions: write # to dispatch the deploy workflow
+
+concurrency:
+    group: release-please
+    cancel-in-progress: false
+
+jobs:
+    release-please:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: googleapis/release-please-action@v4
+              id: release
+              with:
+                  config-file: release-please-config.json
+                  manifest-file: .release-please-manifest.json
+
+            - name: Dispatch production deploy
+              if: ${{ steps.release.outputs.release_created }}
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  gh workflow run deploy.yml \
+                    -R "${{ github.repository }}" \
+                    --ref "${{ steps.release.outputs.tag_name }}" \
+                    -f tag="${{ steps.release.outputs.tag_name }}"
