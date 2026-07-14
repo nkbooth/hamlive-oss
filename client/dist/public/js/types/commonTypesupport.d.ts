@@ -1,4 +1,4 @@
-import { ServerInfo, EndPointResponse, Station, NetInfo, FollowListNetInfo, FollowListResponse, FollowListLimits, FollowListMessage, NetInfoCommon, LiveNetDetailsResponse, FlexOptions, CommandItem, Alias, CommandList, CommandResponse, Client, LiveNetPresenceResponse, StrengthTone, RstReportBase, SigReportType, DefaultInteractionParams, InteractionPayload, SigReportInteractionPayload, NPID, SystemNotification, SystemNotificationResponse } from '#@client/types/commonTypes.js';
+import { ServerInfo, EndPointResponse, Station, NetInfo, FollowListNetInfo, FollowListResponse, FollowListLimits, FollowListMessage, NetListItem, NetListResponse, UpcomingNet, NetInfoCommon, LiveNetDetailsResponse, FlexOptions, CommandItem, Alias, CommandList, CommandResponse, Client, LiveNetPresenceResponse, StrengthTone, RstReportBase, SigReportType, DefaultInteractionParams, InteractionPayload, SigReportInteractionPayload, NPID, SystemNotification, SystemNotificationResponse } from '#@client/types/commonTypes.js';
 export declare class EndPointReponseError extends Error {
     readonly status: number;
     constructor(message: string, status: number);
@@ -24,6 +24,9 @@ export declare const isFollowListNetInfo: TypeGuard<FollowListNetInfo>;
 export declare const isFollowListLimits: TypeGuard<FollowListLimits>;
 export declare const isFollowListMessage: TypeGuard<FollowListMessage>;
 export declare const isFollowListResponse: TypeGuard<FollowListResponse>;
+export declare const isNetListItem: TypeGuard<NetListItem>;
+export declare const isUpcomingNet: TypeGuard<UpcomingNet>;
+export declare const isNetListResponse: TypeGuard<NetListResponse>;
 export declare const isCommandItem: TypeGuard<CommandItem>;
 export declare const isAlias: TypeGuard<Alias>;
 export declare const isCommandList: TypeGuard<CommandList>;

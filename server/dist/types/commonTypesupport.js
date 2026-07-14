@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isSystemNotificationResponse = exports.isSystemNotification = exports.isSigReportInteractionPayload = exports.isInteractionPayload = exports.isRstReportBaseWithTone = exports.isRstReportBase = exports.isSigReportType = exports.isFlexOptions = exports.isCommandResponse = exports.isCommandList = exports.isAlias = exports.isCommandItem = exports.isFollowListResponse = exports.isFollowListMessage = exports.isFollowListLimits = exports.isFollowListNetInfo = exports.isLiveNetDetailsResponse = exports.isLiveNetPresenceResponse = exports.isNetInfo = exports.netInfoCommonFields = exports.isStation = exports.isNpid = exports.isMongoId = exports.isClient = exports.isEndPointResponse = exports.isServerInfo = exports.isEndPointResponseError = exports.isStringOrNull = exports.isObject = exports.NetNotFoundError = exports.EndPointReponseError = void 0;
+exports.isSystemNotificationResponse = exports.isSystemNotification = exports.isSigReportInteractionPayload = exports.isInteractionPayload = exports.isRstReportBaseWithTone = exports.isRstReportBase = exports.isSigReportType = exports.isFlexOptions = exports.isCommandResponse = exports.isCommandList = exports.isAlias = exports.isCommandItem = exports.isNetListResponse = exports.isUpcomingNet = exports.isNetListItem = exports.isFollowListResponse = exports.isFollowListMessage = exports.isFollowListLimits = exports.isFollowListNetInfo = exports.isLiveNetDetailsResponse = exports.isLiveNetPresenceResponse = exports.isNetInfo = exports.netInfoCommonFields = exports.isStation = exports.isNpid = exports.isMongoId = exports.isClient = exports.isEndPointResponse = exports.isServerInfo = exports.isEndPointResponseError = exports.isStringOrNull = exports.isObject = exports.NetNotFoundError = exports.EndPointReponseError = void 0;
 class EndPointReponseError extends Error {
     status;
     constructor(message, status) {
@@ -148,6 +148,25 @@ exports.isFollowListMessage = createTypeGuard({
 exports.isFollowListResponse = createTypeGuard({
     ...endPointResponseFields,
     message: exports.isFollowListMessage
+});
+exports.isNetListItem = createTypeGuard({
+    ...exports.netInfoCommonFields,
+    id: value => (0, exports.isMongoId)(value),
+    closing: value => typeof value === 'boolean',
+    countdownTimer: value => typeof value === 'number',
+    started: value => typeof value === 'boolean',
+    url: value => typeof value === 'string',
+    createdAt: value => typeof value === 'string' || value instanceof Date
+});
+exports.isUpcomingNet = createTypeGuard({
+    ...exports.netInfoCommonFields,
+    id: value => (0, exports.isMongoId)(value),
+    nextStartsAt: value => typeof value === 'string' || value instanceof Date
+});
+exports.isNetListResponse = createTypeGuard({
+    ...endPointResponseFields,
+    netlist: value => Array.isArray(value) && value.every(exports.isNetListItem),
+    upcoming: value => Array.isArray(value) && value.every(exports.isUpcomingNet)
 });
 exports.isCommandItem = createTypeGuard({
     command: value => typeof value === 'string',

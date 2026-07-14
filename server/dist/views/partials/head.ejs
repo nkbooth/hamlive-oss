@@ -3,6 +3,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+<!-- themeBoot must run synchronously before first paint (no wrong-theme flash) -->
+<script src="/js/lib/themeBoot.js"></script>
 <script async src="/js/vendor/es-module-shims.js"></script>
 <!-- immer vendored from: https://cdn.skypack.dev/-/immer@v10.1.1-hYAiji4iGQjFyGWIGnvY/dist=es2020,mode=imports,min/optimized/immer.js -->
 <script type="importmap">
@@ -14,6 +16,10 @@
         }
     }
 </script>
+
+<!-- global, dependency-free custom elements (theme toggle, UTC clock) -->
+<script type="module" src="/js/lib/themeToggle.js"></script>
+<script type="module" src="/js/lib/utcClock.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

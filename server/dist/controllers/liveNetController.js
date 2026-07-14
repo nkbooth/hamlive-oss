@@ -104,9 +104,65 @@ const liveNetDetails = async (req, res, presenceOnly = false) => {
 
 const liveNetPresence = (req, res) => liveNetDetails(req, res, true);
 
+// Next UTC instant a weekly schedule entry fires after `from` (0=Sunday, HH:MM 24h).
+const nextOccurrenceUtc = (dayOfWeekUtc, timeUtc, from) => {
+    const [hours, minutes] = timeUtc.split(':').map(Number);
+    const candidate = new Date(
+        Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate(), hours, minutes)
+    );
+    candidate.setUTCDate(candidate.getUTCDate() + ((dayOfWeekUtc - candidate.getUTCDay() + 7) % 7));
+
+    if (candidate <= from) {
+        candidate.setUTCDate(candidate.getUTCDate() + 7);
+    }
+
+    return candidate;
+};
+
+// Scheduled nets for the dashboard "Up next" list: visible profiles with a
+// weekly schedule and no net currently on the list (live or pending).
+const genUpcoming = async excludeIds => {
+    const UPCOMING_LIMIT = 12;
+
+    const profiles = await NetProfile.find({ 'schedule.0': { $exists: true }, invisible: { $ne: true } })
+        .lean()
+        .select('title frequency mode modeDetails permanent schedule');
+
+    const now = new Date();
+
+    return profiles
+        .filter(profile => !excludeIds.has(profile._id.toString()))
+        .map(profile => {
+            const soonest = profile.schedule
+                .map(entry => nextOccurrenceUtc(entry.dayOfWeekUtc, entry.timeUtc, now))
+                .sort((a, b) => a - b)[0];
+
+            return {
+                id: profile._id,
+                title: profile.title,
+                frequency: profile.frequency,
+                mode: profile.mode,
+                modeDetails: profile.modeDetails,
+                permanent: profile.permanent,
+                nextStartsAt: soonest.toISOString()
+            };
+        })
+        .sort((a, b) => new Date(a.nextStartsAt) - new Date(b.nextStartsAt))
+        .slice(0, UPCOMING_LIMIT);
+};
+
 const liveNetList = async (req, res) => {
     let queryResult;
     let cachedObj;
+
+    // ReactiveStore clients require the full EndPointResponse contract:
+    // ttlMs drives the client poll interval; ssePath null = no SSE for the
+    // aggregate list (per-net SSE only exists on the details endpoint).
+    const requestRateFactor = Math.round(parseInt(res.locals.flexOpts?.requestRateFactor)) || 1;
+    const listContract = {
+        ttlMs: 30000 / requestRateFactor,
+        ssePath: null
+    };
 
     try {
         if ((cachedObj = netListCache.get('netlist'))) {
@@ -116,10 +172,10 @@ const liveNetList = async (req, res) => {
                 respectType: false,
                 ignoreUnknown: true
             });
-            cachedObj['now'] = Date.now();
+            cachedObj['now'] = new Date().toISOString();
             cachedObj['servedFromCache'] = true;
 
-            return res.status(200).json({ ...{ endpointVersion: '1.0' }, ...cachedObj });
+            return res.status(200).json({ ...{ endpointVersion: '1.0' }, ...listContract, ...cachedObj });
         } else {
             logger.debug('LIVENET_Controller: Cache MISS for liveNet LIST');
 
@@ -172,6 +228,8 @@ const liveNetList = async (req, res) => {
                 } else return 0;
             });
 
+            const upcoming = await genUpcoming(new Set(netlist.map(item => item.id.toString())));
+
             if (res.locals.flexOpts.requestRateFactor) {
                 logger.debug(
                     `LIVENET_Controller: liveNet LIST set w/TTL: ${
@@ -180,23 +238,24 @@ const liveNetList = async (req, res) => {
                 );
                 netListCache.set(
                     'netlist',
-                    { netlist },
+                    { netlist, upcoming },
                     30 / Math.round(parseInt(res.locals.flexOpts.requestRateFactor))
                 );
             } else {
-                netListCache.set('netlist', { netlist });
+                netListCache.set('netlist', { netlist, upcoming });
             }
 
             const response = {};
             response['netlist'] = netlist;
+            response['upcoming'] = upcoming;
             response['hash'] = oHash(response, {
                 respectType: false,
                 ignoreUnknown: true
             });
-            response['now'] = Date.now();
+            response['now'] = new Date().toISOString();
             response['servedFromCache'] = false;
 
-            return res.status(200).json({ ...{ endpointVersion: '1.0' }, ...response });
+            return res.status(200).json({ ...{ endpointVersion: '1.0' }, ...listContract, ...response });
         }
     } catch (err) {
         res.status(500).json({

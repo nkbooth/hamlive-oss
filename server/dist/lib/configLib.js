@@ -51,6 +51,7 @@ const fromEnv = {
     geo_key: process.env.GEO_KEY,
     cmd_help_url: process.env.CMD_HELP_URL,
     app_name: process.env.APP_NAME,
+    app_callsign: process.env.APP_CALLSIGN,
     // Ads & analytics provider IDs (optional; only used when the matching
     // feature is enabled below). Use your OWN accounts — never the project's.
     adplugg_access_code: process.env.ADPLUGG_ACCESS_CODE,

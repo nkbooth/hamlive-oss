@@ -1,5 +1,5 @@
 import { EndPointClient } from '#@client/lib/clientUtils.js';
-import { EndPointResponse, LiveNetDetailsResponse, LiveNetPresenceResponse, FollowListResponse, FollowListNetInfo, FollowListLimits, Client, Station, NPID } from '#@client/types/commonTypes.js';
+import { EndPointResponse, LiveNetDetailsResponse, LiveNetPresenceResponse, FollowListResponse, FollowListNetInfo, FollowListLimits, NetListResponse, NetListItem, Client, Station, NPID } from '#@client/types/commonTypes.js';
 import { SimpleInteractions, DefaultStateTypes } from '#@client/types/clientTypes.js';
 export type NewDataReturnType = Promise<void>;
 type NewDataCallback = () => NewDataReturnType;
@@ -120,6 +120,24 @@ export declare class FavoritesReactiveStore extends ReactiveStore<FollowListResp
     get favoritesListChanged(): boolean;
     state(npid: NPID): boolean;
     protected newData(): NewDataReturnType;
+}
+export interface UpNextEntry {
+    kind: 'pending' | 'scheduled';
+    startsAt: Date;
+    id: NPID;
+    title: string;
+    frequency: string;
+    mode: string;
+    modeDetails: string;
+    permanent: boolean;
+    url: string | null;
+}
+export declare class NetListReactiveStore extends ReactiveStore<NetListResponse> {
+    protected isValidStoreData(obj: unknown): obj is NetListResponse;
+    protected newData(): NewDataReturnType;
+    get liveNets(): NetListItem[];
+    get upNext(): UpNextEntry[];
+    static startTime(net: NetListItem): Date;
 }
 export {};
 //# sourceMappingURL=stores.d.ts.map

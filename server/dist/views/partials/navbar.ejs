@@ -1,8 +1,11 @@
 <!--Begin: navbar.ejs-->
 <nav class="navbar navbar-expand-md bg-quaternary navbar-dark" aria-label="Main Navigation">
   <div class="container">
-    <a href="/views/dashboard" class="navbar-brand hasToolTip" title="Spread the word about <%= server.appName %> 🙏" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="<%= server.appName %> Home – Go to the main listing of all active nets">
-      <img src="/img/HL-main.svg" width="150" alt="<%= server.appName %> Logo, click for list of all active nets" />
+    <a href="/views/dashboard" class="navbar-brand hasToolTip hl-brand" title="Spread the word about <%= server.appName %>" data-bs-toggle="tooltip" data-bs-placement="right" aria-label="<%= server.appName %> Home – Go to the main listing of all active nets">
+      <% if (server.appCallsign) { %>
+      <span class="hl-callblock"><%= server.appCallsign %></span>
+      <% } %>
+      <span class="hl-wordmark"><%= server.appName %></span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu" aria-controls="navmenu" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -16,7 +19,7 @@
         </li>
         <li class="nav-item" role="none">
           <a href="/views/mynets" class="nav-link h6" role="menuitem" tabindex="0">
-            <strong>Start Net</strong>
+            <strong>My Nets</strong>
           </a>
         </li>
         <li class="nav-item" role="none">
@@ -37,6 +40,8 @@
         </li>
         <% } %>
       </ul>
+      <hl-utc-clock class="d-none d-md-inline ms-md-4" aria-hidden="true"></hl-utc-clock>
+      <hl-theme-toggle class="ms-2 ms-md-3"></hl-theme-toggle>
     </div>
   </div>
 </nav>

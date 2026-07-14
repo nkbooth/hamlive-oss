@@ -1,0 +1,181 @@
+/* hamlive-oss — MIT License. See LICENSE. */
+
+/*
+ * Design tokens — the single source of color for the app.
+ *
+ * Layering contract:
+ *  - This file is linked AFTER main.min.css, so the legacy --hl-* declarations
+ *    below win the cascade over the ones compiled into the Bootstrap bundle.
+ *  - Components (views, local.css, widget shadow DOMs) must reference tokens,
+ *    never raw color values. Shadow roots inherit custom properties from the
+ *    document, so no extra plumbing is needed for widgets.
+ *
+ * Theme contract:
+ *  - Dark is the primary theme and the default (:root).
+ *  - The OS preference flips to light via prefers-color-scheme.
+ *  - An explicit data-theme="dark|light" stamp on <html> wins over the OS
+ *    preference in both directions (attribute selector outranks bare :root).
+ *
+ * Palette: blue-family accents on blue-biased neutrals. --hl-live stays warm
+ * red-orange on purpose — "on the air" is semantic, not part of the accent family.
+ */
+
+:root {
+    /* Palette — dark (primary) */
+    --hl-ground: #0d1117;
+    --hl-ground-rgb: 13, 17, 23;
+    --hl-surface: #131a23;
+    --hl-surface-rgb: 19, 26, 35;
+    --hl-surface-raised: #1a2430;
+    --hl-line: #263242;
+    --hl-text: #d7dee6;
+    --hl-text-rgb: 215, 222, 230;
+    --hl-text-strong: #ffffff;
+    --hl-text-dim: #8294a7;
+    --hl-accent: #58a6ff;
+    --hl-accent-rgb: 88, 166, 255;
+    --hl-accent-contrast: #071322;
+    --hl-accent-2: #56c1d6;
+    --hl-accent-2-rgb: 86, 193, 214;
+    --hl-live: #ff5c39;
+    --hl-danger: #f3436b;
+    --hl-success: #3cce3c;
+    --hl-warning: #ffc107;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        /* Palette — light */
+        --hl-ground: #f6f8fa;
+        --hl-ground-rgb: 246, 248, 250;
+        --hl-surface: #ffffff;
+        --hl-surface-rgb: 255, 255, 255;
+        --hl-surface-raised: #eaeff5;
+        --hl-line: #d7dfe8;
+        --hl-text: #1a2430;
+        --hl-text-rgb: 26, 36, 48;
+        --hl-text-strong: #000000;
+        --hl-text-dim: #5c6c7d;
+        --hl-accent: #0f62c4;
+        --hl-accent-rgb: 15, 98, 196;
+        --hl-accent-contrast: #ffffff;
+        --hl-accent-2: #157987;
+        --hl-accent-2-rgb: 21, 121, 135;
+        --hl-live: #d94f2b;
+        --hl-danger: #c81e47;
+        --hl-success: #1f9d3f;
+        --hl-warning: #b07b00;
+    }
+}
+
+:root[data-theme='dark'] {
+    --hl-ground: #0d1117;
+    --hl-ground-rgb: 13, 17, 23;
+    --hl-surface: #131a23;
+    --hl-surface-rgb: 19, 26, 35;
+    --hl-surface-raised: #1a2430;
+    --hl-line: #263242;
+    --hl-text: #d7dee6;
+    --hl-text-rgb: 215, 222, 230;
+    --hl-text-strong: #ffffff;
+    --hl-text-dim: #8294a7;
+    --hl-accent: #58a6ff;
+    --hl-accent-rgb: 88, 166, 255;
+    --hl-accent-contrast: #071322;
+    --hl-accent-2: #56c1d6;
+    --hl-accent-2-rgb: 86, 193, 214;
+    --hl-live: #ff5c39;
+    --hl-danger: #f3436b;
+    --hl-success: #3cce3c;
+    --hl-warning: #ffc107;
+}
+
+:root[data-theme='light'] {
+    --hl-ground: #f6f8fa;
+    --hl-ground-rgb: 246, 248, 250;
+    --hl-surface: #ffffff;
+    --hl-surface-rgb: 255, 255, 255;
+    --hl-surface-raised: #eaeff5;
+    --hl-line: #d7dfe8;
+    --hl-text: #1a2430;
+    --hl-text-rgb: 26, 36, 48;
+    --hl-text-strong: #000000;
+    --hl-text-dim: #5c6c7d;
+    --hl-accent: #0f62c4;
+    --hl-accent-rgb: 15, 98, 196;
+    --hl-accent-contrast: #ffffff;
+    --hl-accent-2: #157987;
+    --hl-accent-2-rgb: 21, 121, 135;
+    --hl-live: #d94f2b;
+    --hl-danger: #c81e47;
+    --hl-success: #1f9d3f;
+    --hl-warning: #b07b00;
+}
+
+/* Typography tokens — theme-independent. */
+:root {
+    --hl-font-body: 'Outfit', sans-serif;
+    --hl-font-mono: ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+}
+
+/*
+ * Legacy --hl-* names still referenced by main.min.css, local.css, and views.
+ * Remapped as aliases of the palette so every existing screen tracks the
+ * active theme. Declared theme-neutrally (aliases resolve per theme above).
+ */
+:root {
+    --hl-primary: var(--hl-accent);
+    --hl-secondary: var(--hl-accent-2);
+    --hl-secondary-rgba: color-mix(in srgb, var(--hl-accent-2) 50%, transparent);
+    --hl-light: var(--hl-text);
+    --hl-dark: var(--hl-ground);
+    --hl-tertiary: var(--hl-text-dim);
+    --hl-quaternary: var(--hl-surface-raised);
+    --hl-quinary: var(--hl-text-strong);
+
+    --hl-input-bg: var(--hl-surface);
+    --hl-input-color: var(--hl-text);
+    --hl-input-placeholder-color: var(--hl-text-dim);
+    --hl-input-disabled-bg: var(--hl-surface);
+    --hl-input-disabled-border-color: var(--hl-danger);
+
+    --hl-response-success-overlay: color-mix(in srgb, var(--hl-success) 20%, transparent);
+    --hl-response-error-overlay: color-mix(in srgb, var(--hl-danger) 20%, transparent);
+    --hl-response-status-overlay: color-mix(in srgb, var(--hl-ground) 20%, transparent);
+
+    --hl-modal-content-bg: var(--hl-surface-raised);
+    --hl-modal-content-color: var(--hl-text);
+
+    --hl-accordion-bg: var(--hl-surface);
+    --hl-accordion-border-color: var(--hl-line);
+    --hl-accordion-icon-color: var(--hl-accent);
+    --hl-accordion-button-bg: var(--hl-surface);
+    --hl-accordion-button-active-bg: var(--hl-surface-raised);
+
+    --hl-table-border-color: var(--hl-line);
+    --hl-table-hover-color: var(--hl-accent);
+
+    --hl-offcanvas-color: var(--hl-text);
+    --hl-offcanvas-bg-color: color-mix(in srgb, var(--hl-surface-raised) 96%, transparent);
+    --hl-offcanvas-border-color: var(--hl-line);
+
+    --hl-navbar-dark-color: color-mix(in srgb, var(--hl-text) 70%, transparent);
+    --hl-navbar-dark-hover-color: var(--hl-accent);
+    --hl-navbar-dark-active-color: var(--hl-accent);
+
+    --hl-tooltip-bg: var(--hl-surface-raised);
+}
+
+/*
+ * Bootstrap 5.1 bridge — the compiled utilities (.bg-dark, .text-light, …)
+ * read these RGB triplets at runtime, so remapping them here makes legacy
+ * Bootstrap-styled screens follow the active theme without recompiling.
+ */
+:root {
+    --bs-dark-rgb: var(--hl-ground-rgb);
+    --bs-light-rgb: var(--hl-text-rgb);
+    --bs-primary-rgb: var(--hl-accent-rgb);
+    --bs-secondary-rgb: var(--hl-accent-2-rgb);
+    --bs-body-bg: var(--hl-ground);
+    --bs-body-color: var(--hl-text);
+}

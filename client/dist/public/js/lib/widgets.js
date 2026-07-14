@@ -1134,9 +1134,27 @@ export class NetControlUsage extends NetControlMember {
                 white-space: nowrap;
                 color: var(--hl-secondary);
             }
-            #${this.defaultElementId} img {
+            #${this.defaultElementId} .cheat-link {
+                background: transparent;
+                border: 1px solid var(--hl-line);
+                border-radius: 5px;
+                color: var(--hl-accent-2);
                 cursor: pointer;
-                width: 75%;
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                padding: 0.35rem 0.8rem;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+            #${this.defaultElementId} .cheat-link:hover,
+            #${this.defaultElementId} .cheat-link:focus-visible {
+                border-color: var(--hl-accent-2);
+                color: var(--hl-accent);
+            }
+            #${this.defaultElementId} .cheat-link svg {
+                padding-right: 4px;
+                vertical-align: -0.2em;
             }
         </style>
         <div id="${this.defaultElementId}">
@@ -1150,7 +1168,9 @@ export class NetControlUsage extends NetControlMember {
             </div>
             <div class="headerAndTextContainer">
                 <div class="usage-header hideOnCollapse">
-                    <img src="/img/cheat-sheet-dark.png" alt="Open command documentation cheat sheet" />
+                    <button type="button" class="cheat-link" aria-label="Open command documentation cheat sheet">
+                        ${getIconSvg('bi-journal-check')} Command Cheat Sheet
+                    </button>
                 </div>
                 <div class="help-cmd d-none hideOnExpand" aria-live="polite">
                     ${this.formatUsage('help: ? [ <command> ]')}
@@ -1233,9 +1253,9 @@ export class NetControlUsage extends NetControlMember {
         if (expandIconContainer) {
             expandIconContainer.addEventListener('click', this.toggleExpandCollapse);
         }
-        const imgElement = this.defaultElement.querySelector('img');
-        if (imgElement) {
-            imgElement.addEventListener('click', this.handleCommandHelpClick);
+        const cheatLinkElement = this.defaultElement.querySelector('.cheat-link');
+        if (cheatLinkElement) {
+            cheatLinkElement.addEventListener('click', this.handleCommandHelpClick);
         }
     }
     onDisconnected() {
@@ -1247,9 +1267,9 @@ export class NetControlUsage extends NetControlMember {
         if (expandIconContainer) {
             expandIconContainer.removeEventListener('click', this.toggleExpandCollapse);
         }
-        const imgElement = this.defaultElement.querySelector('img');
-        if (imgElement) {
-            imgElement.removeEventListener('click', this.handleCommandHelpClick);
+        const cheatLinkElement = this.defaultElement.querySelector('.cheat-link');
+        if (cheatLinkElement) {
+            cheatLinkElement.removeEventListener('click', this.handleCommandHelpClick);
         }
     }
     static async init(store) {
@@ -1284,23 +1304,13 @@ export class NetControlForm extends NetControlMember {
         }
 
         #${this.defaultElementId} .response .overlay.error {
-            background: linear-gradient(
-                135deg,
-                rgba(243, 29, 82, 0.15) 0%,
-                rgba(0, 0, 0, 0.2) 50%,
-                rgba(243, 29, 82, 0.15) 100%
-            );
-            border: 1px solid rgba(243, 29, 82, 0.3);
+            background: var(--hl-response-error-overlay);
+            border: 1px solid color-mix(in srgb, var(--hl-danger) 30%, transparent);
         }
 
         #${this.defaultElementId} .response .overlay.success {
-            background: linear-gradient(
-                135deg,
-                rgba(60, 206, 60, 0.15) 0%,
-                rgba(0, 0, 0, 0.2) 50%,
-                rgba(60, 206, 60, 0.15) 100%
-            );
-            border: 1px solid rgba(60, 206, 60, 0.3);
+            background: var(--hl-response-success-overlay);
+            border: 1px solid color-mix(in srgb, var(--hl-success) 30%, transparent);
         }
 
         /* Center the response text and allow it to take up the available space */
@@ -1312,22 +1322,21 @@ export class NetControlForm extends NetControlMember {
         #${this.defaultElementId} input[type="text"] {
             border-radius: 5px;
             box-sizing: border-box; /* Include padding and border in the element's size */
-            background-color: black; /* Set the background color to black */
-            color: var(--hl-light); /* Set the text color */
+            background-color: var(--hl-input-bg);
+            color: var(--hl-input-color);
+            font-family: var(--hl-font-mono);
             font-size: 1.20em; /* Set the font size */
-            font-style: italic; /* Set the font style to italic */
-            border: none; /* Remove default border */
             width: 100%; /* Use 100% of the parent's width */
             padding: 8px; /* Add some padding inside the input */
-            border: 1px solid transparent; /* Set initial border to transparent */
-            transition: border 0.4s; /* Add transition for border */            
+            border: 1px solid var(--hl-line);
+            transition: border 0.4s; /* Add transition for border */
         }
         /* Style for the placeholder text */
         #${this.defaultElementId} input[type="text"]::placeholder {
-            color: var(--hl-tertiary); /* Color for the placeholder text */
+            color: var(--hl-input-placeholder-color);
         }
         #${this.defaultElementId} input[type="text"]:focus {
-            border: 1px solid var(--hl-light); /* Change the border color */
+            border: 1px solid var(--hl-accent); /* Change the border color */
             outline: none; /* Remove the default outline */
         }
         #${this.defaultElementId} .brace {
@@ -1472,11 +1481,11 @@ export class NetControlPanel extends NetControlMember {
                 top: 0px; /* Adjust as needed */
                 left: 50%; /* Center It */
                 transform: translateX(-50%); /* Offset by half its width */
-                background: var(--hl-quaternary);
-                border: 1px solid rgba(220, 131, 53, 0.25);
+                background: var(--hl-surface-raised);
+                border: 1px solid var(--hl-line);
                 border-radius: 8px;
                 padding: 1em;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
                 z-index: 1000; /* Ensure it is above other elements */
                 opacity: 0; /* Start hidden */
                 transition: opacity .25s ease-in-out; /* Fade transition */
@@ -1528,7 +1537,7 @@ export class NetControlPanel extends NetControlMember {
         </style>
         <div id="${this.defaultElementId}">
 
-            <div>✋: <em><hl-state-list group="hand-up"></hl-state-list></em></div>
+            <div>${getIconSvg('bi-hand-index')} <em><hl-state-list group="hand-up"></hl-state-list></em></div>
 
 
             <hl-netcontrol-usage></hl-netcontrol-usage>
@@ -1901,7 +1910,15 @@ export class AvatarCell extends StationTableMember {
                 opacity: 0; /* Start with icons hidden */
                 visibility: hidden; /* Ensure they don't block interaction */
                 transition: opacity 1.25s ease-in, visibility 1.25s ease-in;
-                font-size: 0.9rem;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+            }
+            .onlinestatus-icon.online {
+                background: var(--hl-success);
+            }
+            .onlinestatus-icon.offline {
+                background: var(--hl-text-dim);
             }
             .onlinestatus-icon.visible {
                 opacity: 1;
@@ -1921,7 +1938,11 @@ export class AvatarCell extends StationTableMember {
                 margin: 0;
                 opacity: 1;
                 transition: opacity 0.5s ease-in-out;
-                font-size: 1.9rem;   
+                color: var(--hl-accent);
+            }
+            .hand-icon svg {
+                width: 1.6rem;
+                height: 1.6rem;
             }
             .hand-icon.hand-is-down {
                 opacity: 0;
@@ -1943,9 +1964,9 @@ export class AvatarCell extends StationTableMember {
         </style>
 
         <div id="${this.defaultElementId}">
-            <span class="onlinestatus-icon online">🟢</span> <!-- Online Icon -->
-            <span class="onlinestatus-icon offline">⚪️</span> <!-- Offline Icon -->
-            <span class="hand-icon hand-is-down">✋</span>
+            <span class="onlinestatus-icon online" aria-hidden="true"></span> <!-- Online Icon -->
+            <span class="onlinestatus-icon offline" aria-hidden="true"></span> <!-- Offline Icon -->
+            <span class="hand-icon hand-is-down" aria-hidden="true">${getIconSvg('bi-hand-index-fill')}</span>
             <img referrerPolicy="no-referrer" src=${this.photoUrl}>
         </div>
         `;
@@ -2075,7 +2096,7 @@ export class NameCell extends StationTableMember {
         if (!this.callSign) {
             throw new Error('Call sign is not defined in NameCell widget, refreshTooltip()');
         }
-        this.defaultElement.setAttribute('title', this.station?.location ?? '🚫');
+        this.defaultElement.setAttribute('title', this.station?.location ?? 'No location');
         this.tooltip = new window.bootstrap.Tooltip(this.defaultElement);
     }
     render(onConnected) {
@@ -2124,26 +2145,26 @@ export class SigReportCell extends StationTableMember {
     getInputStyles() {
         return `
             #${this.defaultElementId} input {
-                color: var(--hl-light);
+                color: var(--hl-input-color);
                 font-size: 1rem;
-                background: black;
+                background: var(--hl-input-bg);
                 padding: 10px;
-                border: 1px solid #777;
+                border: 1px solid var(--hl-line);
                 border-radius: 5px;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 transition: border-color 0.4s, box-shadow 0.4s;
             }
             #${this.defaultElementId} input::placeholder {
-                color: gray;
+                color: var(--hl-input-placeholder-color);
             }
             #${this.defaultElementId} input:focus {
-                border-color: var(--hl-light);
+                border-color: var(--hl-accent);
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
                 outline: none;
             }
             #${this.defaultElementId} input:disabled {
-                background: #333;
-                color: #777;
+                background: var(--hl-surface-raised);
+                color: var(--hl-text-dim);
             }
         `;
     }
@@ -2500,7 +2521,7 @@ export class HandInsert extends LiveNetElement {
         return this.store?.stations.haveMyStationPropertiesChanged(['hand']) ?? false;
     }
     getIcon() {
-        return this.store?.stations.mine?.hand ? '👊' : '✋';
+        return getIconSvg(this.store?.stations.mine?.hand ? 'bi-hand-index-fill' : 'bi-hand-index');
     }
     toggleState = () => {
         logger.debug('Toggling hand state');
@@ -2546,6 +2567,248 @@ export class HandInsert extends LiveNetElement {
     }
     static async init(store) {
         await this.initElement('hand-insert', HandInsert, store);
+    }
+}
+const formatNetFrequency = (net) => {
+    const frequency = !net.frequency || parseInt(net.frequency) === 0 ? '' : net.frequency;
+    return net.mode === 'CUSTOM'
+        ? `${frequency} ${net.modeDetails}`.trim()
+        : net.mode === 'Reflector'
+            ? net.modeDetails
+            : `${frequency} ${net.mode}`.trim();
+};
+class NetListElement extends HamLiveElement {
+    priorSignature = '';
+    get signature() {
+        return JSON.stringify(this.myNets);
+    }
+    didMyDataSegmentChange() {
+        return this.signature !== this.priorSignature;
+    }
+    render() {
+        if (!this.defaultElement) {
+            logger.warn(`Default element is not defined in ${this.constructor.name}, render()`);
+            return;
+        }
+        this.priorSignature = this.signature;
+        this.replaceAllDefaultElementChildrenWith(this.buildContent(this.myNets));
+    }
+    onConnected() { }
+    onDisconnected() { }
+    el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className)
+            node.className = className;
+        if (text !== undefined)
+            node.textContent = text;
+        return node;
+    }
+    emptyState(message) {
+        const fragment = document.createDocumentFragment();
+        fragment.append(this.el('p', 'empty', message));
+        return fragment;
+    }
+}
+export class NetCards extends NetListElement {
+    get myNets() {
+        return this.store?.liveNets ?? [];
+    }
+    getTemplate() {
+        return `
+        <style>
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+                gap: 0.9rem;
+            }
+            .card {
+                background: var(--hl-surface);
+                border: 1px solid var(--hl-line);
+                border-radius: 8px;
+                padding: 1rem 1.1rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.55rem;
+            }
+            .freq {
+                color: var(--hl-text);
+                font-family: var(--hl-font-mono);
+                font-size: 1.45rem;
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                flex-wrap: wrap;
+            }
+            .chip {
+                border: 1px solid var(--hl-accent-2);
+                border-radius: 3px;
+                color: var(--hl-accent-2);
+                font-family: var(--hl-font-body, sans-serif);
+                font-size: 0.68rem;
+                letter-spacing: 0.1em;
+                padding: 0.1rem 0.4rem;
+                text-transform: uppercase;
+            }
+            .title {
+                color: var(--hl-text);
+                font-size: 1.02rem;
+                font-weight: 600;
+                text-decoration: none;
+            }
+            .title:hover, .title:focus-visible {
+                color: var(--hl-accent);
+            }
+            .join {
+                align-self: flex-start;
+                background: var(--hl-accent);
+                border: none;
+                border-radius: 5px;
+                color: var(--hl-accent-contrast);
+                cursor: pointer;
+                font-size: 0.8rem;
+                font-weight: 700;
+                margin-top: 0.3rem;
+                padding: 0.45rem 1.1rem;
+                text-decoration: none;
+            }
+            .empty {
+                color: var(--hl-text-dim);
+                font-style: italic;
+            }
+        </style>
+        <div id="${this.defaultElementId}" class="grid"></div>
+        `;
+    }
+    buildContent(nets) {
+        const fragment = document.createDocumentFragment();
+        if (!nets.length) {
+            return this.emptyState('No nets on the air right now.');
+        }
+        for (const net of nets) {
+            const card = this.el('div', 'card');
+            const freq = this.el('div', 'freq', formatNetFrequency(net));
+            if (net.mode !== 'CUSTOM' && net.mode !== 'Reflector') {
+                freq.textContent = !net.frequency || parseInt(net.frequency) === 0 ? '' : net.frequency;
+                freq.append(this.el('span', 'chip', net.mode));
+            }
+            card.append(freq);
+            const title = this.el('a', 'title', net.title);
+            title.href = net.url;
+            card.append(title);
+            const join = this.el('a', 'join', 'Join net');
+            join.href = net.url;
+            card.append(join);
+            fragment.append(card);
+        }
+        return fragment;
+    }
+    static async init(store) {
+        await this.initElement('net-cards', NetCards, store);
+    }
+}
+export class NetUpNext extends NetListElement {
+    get myNets() {
+        return this.store?.upNext ?? [];
+    }
+    static timeLabel(startsAt) {
+        const time = startsAt.toLocaleTimeString([], { timeStyle: 'short' });
+        const isToday = startsAt.toDateString() === new Date().toDateString();
+        return isToday ? `@${time}` : `${startsAt.toLocaleDateString([], { weekday: 'short' })} ${time}`;
+    }
+    getTemplate() {
+        return `
+        <style>
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                font-size: 0.9rem;
+            }
+            td {
+                border-top: 1px solid var(--hl-line);
+                color: var(--hl-text);
+                padding: 0.55rem 0.6rem;
+                vertical-align: middle;
+            }
+            .time {
+                color: var(--hl-accent-2);
+                font-family: var(--hl-font-mono);
+                font-variant-numeric: tabular-nums;
+                white-space: nowrap;
+            }
+            .name a {
+                color: var(--hl-text);
+                font-weight: 600;
+                text-decoration: none;
+            }
+            .name a:hover, .name a:focus-visible {
+                color: var(--hl-accent);
+            }
+            .name span:first-child {
+                color: var(--hl-text);
+                font-weight: 600;
+            }
+            .weekly {
+                border: 1px solid var(--hl-line);
+                border-radius: 999px;
+                color: var(--hl-text-dim);
+                font-size: 0.68rem;
+                letter-spacing: 0.08em;
+                margin-left: 0.6rem;
+                padding: 0.05rem 0.5rem;
+                text-transform: uppercase;
+            }
+            .freq {
+                color: var(--hl-text-dim);
+                font-family: var(--hl-font-mono);
+                white-space: nowrap;
+            }
+            .fav {
+                text-align: right;
+                width: 2rem;
+            }
+            .empty {
+                color: var(--hl-text-dim);
+                font-style: italic;
+            }
+        </style>
+        <div id="${this.defaultElementId}"></div>
+        `;
+    }
+    buildContent(nets) {
+        const fragment = document.createDocumentFragment();
+        if (!nets.length) {
+            return this.emptyState('No nets waiting to start.');
+        }
+        const table = this.el('table');
+        for (const entry of nets) {
+            const row = this.el('tr');
+            row.append(this.el('td', 'time', NetUpNext.timeLabel(entry.startsAt)));
+            const nameCell = this.el('td', 'name');
+            if (entry.url) {
+                const link = this.el('a', undefined, entry.title);
+                link.href = entry.url;
+                nameCell.append(link);
+            }
+            else {
+                nameCell.append(this.el('span', undefined, entry.title));
+                nameCell.append(this.el('span', 'weekly', 'weekly'));
+            }
+            row.append(nameCell);
+            row.append(this.el('td', 'freq', formatNetFrequency(entry)));
+            const favCell = this.el('td', 'fav');
+            if (serverInfo.isLoggedIn && !entry.permanent) {
+                const fav = document.createElement('hl-fav-insert');
+                fav.npid = entry.id;
+                favCell.append(fav);
+            }
+            row.append(favCell);
+            table.append(row);
+        }
+        fragment.append(table);
+        return fragment;
+    }
+    static async init(store) {
+        await this.initElement('net-upnext', NetUpNext, store);
     }
 }
 //# sourceMappingURL=widgets.js.map

@@ -9,6 +9,9 @@ import {
     FollowListResponse,
     FollowListLimits,
     FollowListMessage,
+    NetListItem,
+    NetListResponse,
+    UpcomingNet,
     NetInfoCommon,
     LiveNetDetailsResponse,
     FlexOptions,
@@ -226,6 +229,31 @@ export const isFollowListMessage = createTypeGuard<FollowListMessage>({
 export const isFollowListResponse = createTypeGuard<FollowListResponse>({
     ...endPointResponseFields,
     message: isFollowListMessage
+});
+
+// NetListItem typeguard
+export const isNetListItem = createTypeGuard<NetListItem>({
+    ...netInfoCommonFields,
+    id: value => isMongoId(value),
+    closing: value => typeof value === 'boolean',
+    countdownTimer: value => typeof value === 'number',
+    started: value => typeof value === 'boolean',
+    url: value => typeof value === 'string',
+    createdAt: value => typeof value === 'string' || value instanceof Date
+});
+
+// UpcomingNet typeguard
+export const isUpcomingNet = createTypeGuard<UpcomingNet>({
+    ...netInfoCommonFields,
+    id: value => isMongoId(value),
+    nextStartsAt: value => typeof value === 'string' || value instanceof Date
+});
+
+// NetListResponse typeguard
+export const isNetListResponse = createTypeGuard<NetListResponse>({
+    ...endPointResponseFields,
+    netlist: value => Array.isArray(value) && value.every(isNetListItem),
+    upcoming: value => Array.isArray(value) && value.every(isUpcomingNet)
 });
 
 

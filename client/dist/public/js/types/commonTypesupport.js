@@ -139,6 +139,25 @@ export const isFollowListResponse = createTypeGuard({
     ...endPointResponseFields,
     message: isFollowListMessage
 });
+export const isNetListItem = createTypeGuard({
+    ...netInfoCommonFields,
+    id: value => isMongoId(value),
+    closing: value => typeof value === 'boolean',
+    countdownTimer: value => typeof value === 'number',
+    started: value => typeof value === 'boolean',
+    url: value => typeof value === 'string',
+    createdAt: value => typeof value === 'string' || value instanceof Date
+});
+export const isUpcomingNet = createTypeGuard({
+    ...netInfoCommonFields,
+    id: value => isMongoId(value),
+    nextStartsAt: value => typeof value === 'string' || value instanceof Date
+});
+export const isNetListResponse = createTypeGuard({
+    ...endPointResponseFields,
+    netlist: value => Array.isArray(value) && value.every(isNetListItem),
+    upcoming: value => Array.isArray(value) && value.every(isUpcomingNet)
+});
 export const isCommandItem = createTypeGuard({
     command: value => typeof value === 'string',
     label: value => typeof value === 'string',

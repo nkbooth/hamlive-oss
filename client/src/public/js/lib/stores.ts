@@ -9,6 +9,9 @@ import {
     FollowListResponse,
     FollowListNetInfo,
     FollowListLimits,
+    NetListResponse,
+    NetListItem,
+    UpcomingNet,
     Client,
     Station,
     NPID
@@ -18,6 +21,7 @@ import {
     isLiveNetDetailsResponse,
     isLiveNetPresenceResponse,
     isFollowListResponse,
+    isNetListResponse,
     isNpid
 } from '#@client/types/commonTypesupport.js';
 import { serverInfo } from '#@client/lib/serverInfo.js';
@@ -1157,5 +1161,79 @@ export class FavoritesReactiveStore extends ReactiveStore<FollowListResponse> {
         //setup indexes:
         this._priorFavIndex = this._favIndex ? new Map(this._favIndex) : null; // we don't want a reference to the same map
         this._favIndex = new Map<NPID, FollowListNetInfo>(this.mainCache.message.netlist.map(net => [net.id, net]));
+    }
+}
+
+/**
+ * One row of the dashboard "Up next" list: either a pending net (created,
+ * counting down, joinable via url) or a scheduled weekly occurrence.
+ */
+export interface UpNextEntry {
+    kind: 'pending' | 'scheduled';
+    startsAt: Date;
+    id: NPID;
+    title: string;
+    frequency: string;
+    mode: string;
+    modeDetails: string;
+    permanent: boolean;
+    url: string | null;
+}
+
+/**
+ * NetListReactiveStore syncs the aggregate live/pending net list that powers
+ * the dashboard. No SSE exists for the aggregate list, so the store stays on
+ * the short-poll path (interval driven by the endpoint's ttlMs).
+ */
+export class NetListReactiveStore extends ReactiveStore<NetListResponse> {
+    protected isValidStoreData(obj: unknown): obj is NetListResponse {
+        return isNetListResponse(obj);
+    }
+
+    protected async newData(): NewDataReturnType {
+        logger.info('New data received, processing in NetListReactiveStore');
+    }
+
+    /** Nets currently on the air (started and not closing). */
+    public get liveNets(): NetListItem[] {
+        return (this.mainCache?.netlist ?? []).filter(net => net.started && !net.closing);
+    }
+
+    /** Pending nets and scheduled occurrences, merged and sorted by start time. */
+    public get upNext(): UpNextEntry[] {
+        const pending: UpNextEntry[] = (this.mainCache?.netlist ?? [])
+            .filter(net => !net.started && !net.closing)
+            .map(net => ({
+                kind: 'pending',
+                startsAt: NetListReactiveStore.startTime(net),
+                id: net.id,
+                title: net.title,
+                frequency: net.frequency,
+                mode: net.mode,
+                modeDetails: net.modeDetails,
+                permanent: net.permanent,
+                url: net.url
+            }));
+
+        const scheduled: UpNextEntry[] = (this.mainCache?.upcoming ?? []).map((net: UpcomingNet) => ({
+            kind: 'scheduled',
+            startsAt: new Date(net.nextStartsAt),
+            id: net.id,
+            title: net.title,
+            frequency: net.frequency,
+            mode: net.mode,
+            modeDetails: net.modeDetails,
+            permanent: net.permanent,
+            url: null
+        }));
+
+        return [...pending, ...scheduled].sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+    }
+
+    /** Scheduled start time of a pending net: creation time plus its countdown. */
+    public static startTime(net: NetListItem): Date {
+        const start = new Date(net.createdAt);
+        start.setMinutes(start.getMinutes() + net.countdownTimer);
+        return start;
     }
 }

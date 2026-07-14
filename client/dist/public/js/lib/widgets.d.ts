@@ -1,5 +1,5 @@
-import { StoreSubscriber, ReactiveStore, NewDataReturnType, LiveNetReactiveStore, FavoritesReactiveStore, PropertiesOfInterest, StateGroupKey, ReadonlyStateGroup } from '#@client/lib/stores.js';
-import { EndPointResponse, Station, NPID } from '#@client/types/commonTypes.js';
+import { StoreSubscriber, ReactiveStore, NewDataReturnType, LiveNetReactiveStore, FavoritesReactiveStore, NetListReactiveStore, UpNextEntry, PropertiesOfInterest, StateGroupKey, ReadonlyStateGroup } from '#@client/lib/stores.js';
+import { EndPointResponse, Station, NetListItem, NPID } from '#@client/types/commonTypes.js';
 import { SimpleInteractions, SimpleInteractionMethodNames, DefaultStateTypes } from '#@client/types/clientTypes.js';
 import { InteractionClient, AdminClient, getIconSvg } from '#@client/lib/clientUtils.js';
 export declare class NetworkStatus extends HTMLElement {
@@ -395,6 +395,31 @@ export declare class HandInsert extends LiveNetElement implements ButtonBarInser
     protected onConnected(): void;
     protected onDisconnected(): void;
     static init(store: LiveNetReactiveStore): Promise<void>;
+}
+declare abstract class NetListElement<R> extends HamLiveElement<NetListReactiveStore> {
+    private priorSignature;
+    protected abstract get myNets(): R[];
+    private get signature();
+    protected didMyDataSegmentChange(): boolean;
+    protected render(): void;
+    protected abstract buildContent(nets: R[]): DocumentFragment;
+    protected onConnected(): void;
+    protected onDisconnected(): void;
+    protected el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K];
+    protected emptyState(message: string): DocumentFragment;
+}
+export declare class NetCards extends NetListElement<NetListItem> {
+    protected get myNets(): NetListItem[];
+    protected getTemplate(): string;
+    protected buildContent(nets: NetListItem[]): DocumentFragment;
+    static init(store: NetListReactiveStore): Promise<void>;
+}
+export declare class NetUpNext extends NetListElement<UpNextEntry> {
+    protected get myNets(): UpNextEntry[];
+    private static timeLabel;
+    protected getTemplate(): string;
+    protected buildContent(nets: UpNextEntry[]): DocumentFragment;
+    static init(store: NetListReactiveStore): Promise<void>;
 }
 export {};
 //# sourceMappingURL=widgets.d.ts.map
