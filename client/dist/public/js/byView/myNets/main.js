@@ -2,16 +2,35 @@
 
 'use strict';
 
-tinymce.init({
-    selector: 'textarea#input_notes',
-    skin_url: '/tinymce/skins/hl',
-    content_css: 'dark',
-    plugins: 'lists',
-    toolbar: 'bullist italic',
-    menubar: '',
-    statusbar: false,
-    max_height: 235
+// Self-hosted Toast UI Editor (MIT) — WYSIWYG with a Markdown tab. Notes are still
+// submitted as HTML so the server-side sanitizeNotes() contract is unchanged.
+const isLightTheme = () => {
+    // Mirror tokens.css: an explicit data-theme stamp wins, else the OS preference decides.
+    const stamped = document.documentElement.dataset.theme;
+    if (stamped) return stamped === 'light';
+    return window.matchMedia('(prefers-color-scheme: light)').matches;
+};
+
+const notesEditor = new toastui.Editor({
+    el: document.getElementById('input_notes'),
+    height: '235px',
+    initialEditType: 'wysiwyg',
+    toolbarItems: [['bold', 'italic'], ['ul']],
+    usageStatistics: false,
+    theme: isLightTheme() ? 'light' : 'dark'
 });
+
+const applyEditorTheme = () => {
+    const editorRoot = document.querySelector('#input_notes .toastui-editor-defaultUI');
+    editorRoot && editorRoot.classList.toggle('toastui-editor-dark', !isLightTheme());
+};
+
+// Follow the navbar theme toggle (it restamps data-theme on <html>).
+new MutationObserver(applyEditorTheme).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme']
+});
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', applyEditorTheme);
 
 import { HttpClient, FormState } from '#@client/lib/old__clientUtils.js';
 
@@ -267,7 +286,7 @@ window.netProfileEditByID = async function (id) {
     document.getElementById('input_restricted_sigrep').checked = res.data?.restrictedSigReports ? true : false;
     document.getElementById('input_auto_in').checked = res.data?.autoIn ? true : false;
     document.getElementById('input_modedetails').value = res.data.modeDetails;
-    tinymce.get('input_notes').setContent(res.data.notes);
+    notesEditor.setHTML(res.data.notes);
 
     document.getElementById('input_npid_for_netprofile').value = res.data._id;
     modeHandler();
@@ -294,7 +313,8 @@ function np_submitHandler(e) {
         mode: formDataToSend.get('mode'),
         restrictedSigReports: formDataToSend.get('restricted_sigrep') ? true : false,
         autoIn: formDataToSend.get('auto_in') ? true : false,
-        notes: tinymce.get('input_notes').getContent(),
+        // An "empty" editor still emits wrapper markup — send a real empty string instead.
+        notes: notesEditor.getMarkdown().trim() === '' ? '' : notesEditor.getHTML(),
         modeDetails: formDataToSend.get('modedetails')
     };
 
@@ -388,10 +408,8 @@ netOwnerFormState.mode = 'new';
 
 setTimeout(() => {
     if (netProfileFormState.mode === 'new') {
-        tinymce
-            .get('input_notes')
-            .setContent(
-                'Net Control should change this SAMPLE text to relevant info about the club/net. The contents here will be displayed to net attendees, momentarily, when the live net page loads<p>Echolink: XX#XX-L</p>\n<p><em>this is italicized</em></p>'
-            );
+        notesEditor.setHTML(
+            'Net Control should change this SAMPLE text to relevant info about the club/net. The contents here will be displayed to net attendees, momentarily, when the live net page loads<p>Echolink: XX#XX-L</p>\n<p><em>this is italicized</em></p>'
+        );
     }
 }, 2000);

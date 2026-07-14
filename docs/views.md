@@ -87,7 +87,7 @@ document.head.appendChild(m);
 - Partial files under `server/dist/views/partials/` include optional integrations used by the running application:
     - analytics: `featureGoogleAnalytics.ejs` (off by default; see [runtime-config](runtime-config.md))
     - ads: `adTopBar.ejs` / `featureAdPlugg.ejs` (off by default)
-    - TinyMCE: `featureTinyMceJs.ejs` — included only in `myNets.ejs` (self-hosted from `client/dist/public/tinymce/`)
+    - notes editor: `featureNotesEditorJs.ejs` — Toast UI Editor, included only in `myNets.ejs` (self-hosted from `client/dist/public/toastui/`)
     - emoji picker: `featureEmojiPicker.ejs` — included in `liveNet.ejs` when `user.chat` is true; loads the `emoji-picker-element` web component
     - Bootstrap Icons: `featureBootstrapIcons.ejs` — CSS link to Bootstrap Icons CDN
     - axios helper import: `featureAxiosJs.ejs`
@@ -103,7 +103,7 @@ document.head.appendChild(m);
 
 - `server/dist/views/liveNet.ejs` — chat container + station table + main.js bootstrap
 - `server/dist/views/favorites.ejs` — favorites page
-- `server/dist/views/myNets.ejs` — net management (includes TinyMCE)
+- `server/dist/views/myNets.ejs` — net management (includes the Toast UI notes editor)
 - `server/dist/views/partials/head.ejs` — importmap (immer, stream-chat) + ES module shims
 - `server/dist/views/partials/featureServerInfo.ejs` — serverInfo meta
 - `server/dist/views/partials/featureEmojiPicker.ejs` — emoji-picker-element web component
