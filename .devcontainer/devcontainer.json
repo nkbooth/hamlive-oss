@@ -1,0 +1,9 @@
+{
+  "name": "hamlive-oss",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22-bookworm",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Ham.Live app" }
+  },
+  "postCreateCommand": "npm install"
+}
