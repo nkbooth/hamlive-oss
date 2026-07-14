@@ -1,0 +1,86 @@
+/* hamlive-oss — MIT License. See LICENSE. */
+
+// Self-registering <hl-theme-toggle> element, loaded globally from head.ejs.
+// Deliberately dependency-free (no #@client imports) so every page — including
+// not-yet-ported legacy views — gets the toggle without a per-view entry point.
+
+const THEME_KEY = 'hl-theme';
+
+const MOON_SVG = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z"/>
+        <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+    </svg>`;
+
+const SUN_SVG = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+    </svg>`;
+
+/** Unobtrusive dark/light toggle; persists the choice and stamps data-theme on <html>. */
+class ThemeToggle extends HTMLElement {
+    private readonly toggleRoot = this.attachShadow({ mode: 'closed' });
+
+    private get effectiveTheme(): 'dark' | 'light' {
+        const stamped = document.documentElement.dataset['theme'];
+        if (stamped === 'dark' || stamped === 'light') {
+            return stamped;
+        }
+        // No explicit stamp: mirror the CSS default (dark unless the OS asks for light).
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+
+    private handleClick = (): void => {
+        const next = this.effectiveTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset['theme'] = next;
+        try {
+            window.localStorage.setItem(THEME_KEY, next);
+        } catch {
+            // Storage unavailable: the stamp still applies for this page view.
+        }
+        this.renderIcon();
+    };
+
+    private renderIcon(): void {
+        const button = this.toggleRoot.querySelector('button');
+        if (button) {
+            button.innerHTML = this.effectiveTheme === 'dark' ? SUN_SVG : MOON_SVG;
+            button.setAttribute(
+                'aria-label',
+                this.effectiveTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+            );
+        }
+    }
+
+    connectedCallback(): void {
+        this.toggleRoot.innerHTML = /*html*/ `
+            <style>
+                button {
+                    background: transparent;
+                    border: none;
+                    border-radius: 5px;
+                    color: var(--hl-text-dim);
+                    cursor: pointer;
+                    line-height: 1;
+                    padding: 0.35rem;
+                }
+                button:hover, button:focus-visible {
+                    color: var(--hl-accent);
+                }
+            </style>
+            <button type="button"></button>
+        `;
+        this.renderIcon();
+        this.toggleRoot.querySelector('button')?.addEventListener('click', this.handleClick);
+    }
+
+    disconnectedCallback(): void {
+        this.toggleRoot.querySelector('button')?.removeEventListener('click', this.handleClick);
+    }
+}
+
+customElements.define('hl-theme-toggle', ThemeToggle);
+
+// Loaded with <script type="module">; the empty export keeps tsc treating this
+// file as a module (isolated scope) rather than a global script.
+export {};
