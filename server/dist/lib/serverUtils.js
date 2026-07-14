@@ -184,7 +184,12 @@ const addServerInfo = async (req, res, next) => {
         const { callSign = null, displayName = null, id: userId = null, newAccount = false } = req.user || {};
         const { gracePeriodDays, ads, requestRateFactor, httpClientTimeout, chat, analytics, awayInMs } =
             res.locals.flexOpts || {};
-        const { applogname: appLogName, cmd_help_url: cmdHelpUrl = '', app_name: appName = 'Ham.Live' } = conf || {};
+        const {
+            applogname: appLogName,
+            cmd_help_url: cmdHelpUrl = '',
+            app_name: appName = 'Ham.Live',
+            app_callsign: appCallsign = ''
+        } = conf || {};
         const googleAuth = Boolean(conf.google_client_id && conf.google_client_secret);
         const chatEnabled = Boolean(conf.stream_api_key && conf.stream_api_secret);
         const emailEnabled = Boolean(conf.sendgrid_api_key || conf.smtp_host);
@@ -215,6 +220,7 @@ const addServerInfo = async (req, res, next) => {
                 logLevel,
                 appLogName,
                 appName,
+                appCallsign,
                 cmdHelpUrl,
                 googleAuth,
                 chatEnabled,

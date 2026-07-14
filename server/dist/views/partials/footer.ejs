@@ -1,19 +1,20 @@
 <!--Begin: footer.ejs-->
-<footer class="m-3 pt-5 bg-dark">
-  <small class="text-quaternary">
-    &copy; <%= server.appName %> <%= (new Date( server.ts )).getFullYear() %>
-    <span class="mx-1">&middot;</span>
-    <a class="text-quaternary text-decoration-none" href="/views/privacypolicy">Privacy</a>
-    <span class="mx-1">&middot;</span>
-    <a class="text-quaternary text-decoration-none" href="/views/termsofuse">Terms</a>
-    <span class="mx-1">&middot;</span>
-    <a class="text-quaternary text-decoration-none" href="/views/cookiepolicy">Cookies</a>
+<footer class="hl-footer">
+  <div class="hl-footer-left">
+    <span>&copy; <%= server.appName %> <%= (new Date( server.ts )).getFullYear() %></span>
+    <a href="/views/privacypolicy">Privacy</a>
+    <a href="/views/termsofuse">Terms</a>
+    <a href="/views/cookiepolicy">Cookies</a>
     <% if (server.supportUrl) { %>
-    <span class="mx-1">&middot;</span>
-    <a class="text-quaternary text-decoration-none" href="<%= server.supportUrl %>" target="_blank" rel="noopener">
+    <a href="<%= server.supportUrl %>" target="_blank" rel="noopener">
       <i class="bi bi-cup-hot"></i> <%= server.supportLabel || 'Support this site' %>
     </a>
     <% } %>
-  </small>
+  </div>
+  <div class="hl-footer-right">
+    a self-hosted fork of
+    <a href="https://www.ham.live" target="_blank" rel="noopener">Ham.Live</a>
+    &middot; MIT License
+  </div>
 </footer>
 <!--End: footer.ejs-->
