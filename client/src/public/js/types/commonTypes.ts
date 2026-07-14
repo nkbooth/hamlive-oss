@@ -178,6 +178,28 @@ export interface FollowListResponse extends EndPointResponse {
     message: FollowListMessage;
 }
 
+// NetListItem type — one row of the aggregate live/pending net list (dashboard)
+export interface NetListItem extends NetInfoCommon {
+    id: NPID;
+    closing: boolean;
+    countdownTimer: number;
+    started: boolean;
+    url: string;
+    createdAt: Date | string;
+}
+
+// UpcomingNet type — a scheduled (not yet created) net occurrence
+export interface UpcomingNet extends NetInfoCommon {
+    id: NPID;
+    nextStartsAt: Date | string;
+}
+
+// NetListResponse type
+export interface NetListResponse extends EndPointResponse {
+    netlist: NetListItem[];
+    upcoming: UpcomingNet[];
+}
+
 
 // LiveNetDetailsResponse type
 export interface LiveNetDetailsResponse extends EndPointResponse {

@@ -1,5 +1,5 @@
 import { Looper, deepEqual, deepClone, createProxy } from '#@client/lib/clientUtils.js';
-import { isLiveNetDetailsResponse, isLiveNetPresenceResponse, isFollowListResponse, isNpid } from '#@client/types/commonTypesupport.js';
+import { isLiveNetDetailsResponse, isLiveNetPresenceResponse, isFollowListResponse, isNetListResponse, isNpid } from '#@client/types/commonTypesupport.js';
 import { serverInfo } from '#@client/lib/serverInfo.js';
 import { createLogger } from '#@client/lib/logger.js';
 import { produce } from 'immer';
@@ -795,6 +795,49 @@ export class FavoritesReactiveStore extends ReactiveStore {
         this._list = this.mainCache.message.netlist;
         this._priorFavIndex = this._favIndex ? new Map(this._favIndex) : null;
         this._favIndex = new Map(this.mainCache.message.netlist.map(net => [net.id, net]));
+    }
+}
+export class NetListReactiveStore extends ReactiveStore {
+    isValidStoreData(obj) {
+        return isNetListResponse(obj);
+    }
+    async newData() {
+        logger.info('New data received, processing in NetListReactiveStore');
+    }
+    get liveNets() {
+        return (this.mainCache?.netlist ?? []).filter(net => net.started && !net.closing);
+    }
+    get upNext() {
+        const pending = (this.mainCache?.netlist ?? [])
+            .filter(net => !net.started && !net.closing)
+            .map(net => ({
+            kind: 'pending',
+            startsAt: NetListReactiveStore.startTime(net),
+            id: net.id,
+            title: net.title,
+            frequency: net.frequency,
+            mode: net.mode,
+            modeDetails: net.modeDetails,
+            permanent: net.permanent,
+            url: net.url
+        }));
+        const scheduled = (this.mainCache?.upcoming ?? []).map((net) => ({
+            kind: 'scheduled',
+            startsAt: new Date(net.nextStartsAt),
+            id: net.id,
+            title: net.title,
+            frequency: net.frequency,
+            mode: net.mode,
+            modeDetails: net.modeDetails,
+            permanent: net.permanent,
+            url: null
+        }));
+        return [...pending, ...scheduled].sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+    }
+    static startTime(net) {
+        const start = new Date(net.createdAt);
+        start.setMinutes(start.getMinutes() + net.countdownTimer);
+        return start;
     }
 }
 //# sourceMappingURL=stores.js.map

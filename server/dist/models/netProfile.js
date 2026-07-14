@@ -94,7 +94,24 @@ const netProfileSchema = new Schema(
         autoIn: { type: Boolean, default: false },
         permanent: { type: Boolean, default: false },
         restrictedSigReports: { type: Boolean, default: false },
-        invisible: { type: Boolean, default: false }
+        invisible: { type: Boolean, default: false },
+        // Optional weekly schedule, expressed in UTC (ham convention; avoids
+        // per-profile timezone bookkeeping). Drives the dashboard "Up next" list.
+        schedule: [
+            {
+                dayOfWeekUtc: {
+                    type: Number,
+                    min: 0,
+                    max: 6,
+                    required: [true, 'dayOfWeekUtc (0=Sunday) required in schedule entry']
+                },
+                timeUtc: {
+                    type: String,
+                    match: [/^([01]\d|2[0-3]):[0-5]\d$/, 'timeUtc must be HH:MM (24h UTC)'],
+                    required: [true, 'timeUtc required in schedule entry']
+                }
+            }
+        ]
     },
     { timestamps: true }
 );

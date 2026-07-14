@@ -8,51 +8,30 @@
   <title><%= server.appName %> <% if (server.logLevel !== "info") { %> (<%= server.logLevel %>) <% } %></title>
 </head>
 
-<body class="bg-dark">
+<body class="bg-dark hl-page">
   <%- include('./partials/adTopBar') %>
   <%- include('./partials/navbar', { user: user }) %>
 
-  <div class="container-xxl">
-    <div class="row">
-      <div class="col p-md-2 m-md-3">
-        <ul class="nav nav-tabs">
-          <li class="nav-item">
-            <a class="nav-link active bg-secondary" href="#">Live Nets</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/views/intro">How-To Video</a>
-          </li>
-        </ul>
+  <main class="hl-dashboard">
+    <section aria-labelledby="onair-heading">
+      <div class="hl-sechead">
+        <span class="hl-livedot" aria-hidden="true"></span>
+        <h2 id="onair-heading">On the air</h2>
       </div>
-    </div>
+      <hl-net-cards></hl-net-cards>
+    </section>
 
-    <div class="p-2" id="dashItemsContainer">
-      <!-- Template for dynamically generated net rows -->
-      <div id="netTemplate" class="ms-md-5 me-md-5 mb-2 mb-md-3 row bg-very-dark rounded border-1 border-light border-dotted text-secondary d-none py-4">
-        <div class="row">
-          <div class="col-md-5 ms-md-5 text-light text-nowrap align-items-end">
-            <a id="title-link" href="#" class="text-decoration-none text-muted">
-              <img src="/img/on-air-inactive2.png" id="onairimg" width="62" height="22" />
-              <span class="ms-1 ms-md-2 align-middle" id="title" style="font-size: 1.1em"></span>
-            </a>
-            <span> </span>
-            <span class="text-tertiary align-bottom">
-              <% if (user.isLoggedIn) { %>
-              <i class="bi bi-star favicon pt-2" style="font-size: 1.1em"></i>
-              <% } else { %>
-              <i class="d-none bi bi-star favicon" style="font-size: 1.1em"></i>
-              <% } %>
-            </span>
-          </div>
-          <div class="col"></div>
-        </div>
-        <div class="row">
-          <div class="col-5 ms-md-5" id="startTime"></div>
-          <div class="col" id="frequency"></div>
-        </div>
+    <section aria-labelledby="upnext-heading">
+      <div class="hl-sechead">
+        <h2 id="upnext-heading">Up next</h2>
       </div>
-    </div>
-  </div>
+      <hl-net-upnext></hl-net-upnext>
+    </section>
+
+    <p class="hl-dash-hint">
+      New here? <a href="/views/intro">Watch the how-to video</a> or read the <a href="/views/guide">guide</a>.
+    </p>
+  </main>
 
   <%- include('./partials/pageBottomFeatures') %>
   <script src="/js/byView/<%= VIEW %>/main.js" type="module"></script>

@@ -130,6 +130,22 @@ export interface FollowListMessage {
 export interface FollowListResponse extends EndPointResponse {
     message: FollowListMessage;
 }
+export interface NetListItem extends NetInfoCommon {
+    id: NPID;
+    closing: boolean;
+    countdownTimer: number;
+    started: boolean;
+    url: string;
+    createdAt: Date | string;
+}
+export interface UpcomingNet extends NetInfoCommon {
+    id: NPID;
+    nextStartsAt: Date | string;
+}
+export interface NetListResponse extends EndPointResponse {
+    netlist: NetListItem[];
+    upcoming: UpcomingNet[];
+}
 export interface LiveNetDetailsResponse extends EndPointResponse {
     client?: Client;
     net: NetInfo;

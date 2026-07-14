@@ -25,7 +25,323 @@ body {
 }
 
 .bg-very-dark {
-    background-color: #121212;
+    background-color: var(--hl-surface);
+}
+
+/* Page frame: full-height column so the footer sits at the viewport bottom */
+body.hl-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+body.hl-page main {
+    flex: 1;
+}
+
+/* Dashboard layout (see dashboard.ejs) — fluid with a wide cap */
+.hl-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 2.2rem;
+    margin-inline: auto;
+    max-width: 110rem;
+    padding: 1.6rem clamp(1rem, 3vw, 3rem) 2.5rem;
+    width: 100%;
+}
+
+.hl-sechead {
+    align-items: center;
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.hl-sechead h2 {
+    color: var(--hl-text-dim);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.hl-livedot {
+    background: var(--hl-live);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--hl-live);
+    height: 8px;
+    width: 8px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hl-livedot {
+        animation: hl-pulse 1.6s ease-in-out infinite;
+    }
+}
+
+@keyframes hl-pulse {
+    50% {
+        opacity: 0.35;
+    }
+}
+
+.hl-dash-hint {
+    color: var(--hl-text-dim);
+    font-size: 0.85rem;
+}
+
+.hl-dash-hint a {
+    color: var(--hl-accent-2);
+    text-decoration: none;
+}
+
+/* Header (see navbar.ejs). Overrides the legacy gradient baked into main.min.css. */
+.navbar-dark {
+    background: var(--hl-surface) !important;
+    border-bottom: 1px solid var(--hl-line);
+    box-shadow: inset 0 2px 0 var(--hl-accent);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--hl-text-dim);
+    transition: color 0.15s ease-in-out;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus-visible {
+    color: var(--hl-accent);
+    text-decoration: underline;
+    text-decoration-color: var(--hl-accent);
+    text-underline-offset: 0.45em;
+}
+
+/* Navbar brand: callsign block + wordmark (see navbar.ejs) */
+.hl-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.hl-callblock {
+    border: 1.5px solid var(--hl-accent);
+    border-radius: 4px;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--hl-accent) 35%, transparent);
+    color: var(--hl-accent);
+    font-family: var(--hl-font-mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.55rem;
+}
+
+.hl-wordmark {
+    color: var(--hl-text);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+}
+
+/* Base links: themed via tokens (compiled bundle bakes in the old orange) */
+a {
+    color: var(--hl-accent);
+}
+
+a:hover {
+    color: color-mix(in srgb, var(--hl-accent) 80%, var(--hl-text));
+}
+
+/* Accordions (net details): themed via tokens (compiled bundle bakes in black) */
+.accordion-item {
+    background-color: var(--hl-accordion-bg);
+    border-color: var(--hl-accordion-border-color);
+}
+
+.accordion-button {
+    background-color: var(--hl-accordion-button-bg);
+    color: var(--hl-text);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--hl-accordion-button-active-bg);
+    box-shadow: inset 0 -1px 0 var(--hl-line);
+    color: var(--hl-accent);
+}
+
+.accordion-button::after,
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%238294a7'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-body {
+    color: var(--hl-text);
+}
+
+/* Dropdown menus: themed via tokens */
+.dropdown-menu {
+    background-color: var(--hl-surface-raised);
+    border: 1px solid var(--hl-line);
+}
+
+.dropdown-item {
+    color: var(--hl-text);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: color-mix(in srgb, var(--hl-accent) 15%, transparent);
+    color: var(--hl-text);
+}
+
+.dropdown-divider {
+    border-top-color: var(--hl-line);
+}
+
+/* Tab navs: themed via tokens (compiled bundle bakes in the old orange) */
+.nav-tabs {
+    border-bottom-color: var(--hl-line);
+}
+
+.nav-tabs .nav-link {
+    color: var(--hl-accent);
+}
+
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+    border-color: var(--hl-line);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--hl-surface-raised) !important;
+    border-color: var(--hl-line);
+    color: var(--hl-text);
+}
+
+/* Form controls: themed via tokens (main.min.css bakes in literal black/cream) */
+.form-control,
+.form-select {
+    background-color: var(--hl-input-bg);
+    border-color: var(--hl-line);
+    color: var(--hl-input-color);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--hl-input-bg);
+    border-color: var(--hl-accent);
+    box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--hl-accent) 25%, transparent);
+    color: var(--hl-input-color);
+}
+
+.form-control::placeholder {
+    color: var(--hl-input-placeholder-color);
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: var(--hl-input-disabled-bg);
+    border-color: var(--hl-input-disabled-border-color);
+}
+
+/* Buttons: themed via tokens (compiled bundle bakes in the old orange) */
+.btn-primary {
+    background-color: var(--hl-accent);
+    border-color: var(--hl-accent);
+    color: var(--hl-accent-contrast);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: color-mix(in srgb, var(--hl-accent) 85%, var(--hl-text-strong));
+    border-color: color-mix(in srgb, var(--hl-accent) 85%, var(--hl-text-strong));
+    color: var(--hl-accent-contrast);
+}
+
+.btn-secondary {
+    background-color: var(--hl-surface-raised);
+    border-color: var(--hl-line);
+    color: var(--hl-text);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+    background-color: color-mix(in srgb, var(--hl-surface-raised) 85%, var(--hl-text));
+    border-color: var(--hl-line);
+    color: var(--hl-text);
+}
+
+.btn-outline-secondary {
+    border-color: var(--hl-accent-2);
+    color: var(--hl-accent-2);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    background-color: var(--hl-accent-2);
+    border-color: var(--hl-accent-2);
+    color: var(--hl-ground);
+}
+
+/* Tooltips: themed via tokens (main.min.css bakes in a literal purple) */
+.tooltip-inner {
+    background-color: var(--hl-tooltip-bg);
+    border: 1px solid var(--hl-line);
+    color: var(--hl-text);
+}
+
+.bs-tooltip-top .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^='top'] .tooltip-arrow::before {
+    border-top-color: var(--hl-tooltip-bg);
+}
+
+.bs-tooltip-end .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^='right'] .tooltip-arrow::before {
+    border-right-color: var(--hl-tooltip-bg);
+}
+
+.bs-tooltip-bottom .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^='bottom'] .tooltip-arrow::before {
+    border-bottom-color: var(--hl-tooltip-bg);
+}
+
+.bs-tooltip-start .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^='left'] .tooltip-arrow::before {
+    border-left-color: var(--hl-tooltip-bg);
+}
+
+/* Footer (see partials/footer.ejs) */
+.hl-footer {
+    align-items: center;
+    border-top: 1px solid var(--hl-line);
+    color: var(--hl-text-dim);
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+    gap: 0.5rem 2rem;
+    justify-content: space-between;
+    margin-top: auto;
+    padding: 1rem clamp(1rem, 3vw, 3rem);
+}
+
+.hl-footer a {
+    color: var(--hl-text-dim);
+    text-decoration: none;
+}
+
+.hl-footer a:hover,
+.hl-footer a:focus-visible {
+    color: var(--hl-accent);
+    text-decoration: underline;
+}
+
+.hl-footer-left {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.1rem;
 }
 
 .border-dotted {
