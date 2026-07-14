@@ -77,7 +77,8 @@ const sanitizeNotes = notes =>
             .replace(/"/g, '&#34;')
             .replace(/'/g, '&#39;'),
         {
-            allowedTags: ['li', 'p', 'ul', 'b', 'br', 'em', 'i']
+            // 'strong' — Toast UI Editor emits <strong> for bold, not <b>.
+            allowedTags: ['li', 'p', 'ul', 'b', 'br', 'em', 'i', 'strong']
         }
     ) || '';
 

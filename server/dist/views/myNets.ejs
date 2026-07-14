@@ -5,7 +5,7 @@
 <head>
   <%- include('./partials/head') %> <%- include('./partials/pageTopFeatures') %>
   <!-- prettier-ignore -->
-  <%- include('./partials/featureTinyMceJs') %>
+  <%- include('./partials/featureNotesEditorJs') %>
 
   <title><%= server.appName %> - My Nets <%if (server.logLevel !== "info") {%> (<%= server.logLevel %>) <%}%></title>
     </head>
@@ -105,7 +105,7 @@
 
                 <i data-bs-toggle="tooltip" data-bs-placement="right" title="Should be no more than ~5 lines of text" class="text-light bi bi-info-circle"></i>
 
-                <textarea class="form-control" name="notes" id="input_notes"></textarea>
+                <div id="input_notes"></div>
               </div>
 
               <!-- FormState stores current mode (new vs edit) in this hidden input -->
