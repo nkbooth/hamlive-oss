@@ -16,7 +16,8 @@
         "dev": "node ./scripts/dev.js",
         "test": "node --test \"test/**/*.test.mjs\"",
         "dev:watch": "cross-env NODE_ENV=development concurrently --kill-others \"tsc -p server/tsconfig.json -w\" \"tsc -p client/tsconfig.json -w\" \"nodemon --delay 2.5 server/dist/server.js\"",
-        "sync:types": "node -e \"require('fs').copyFileSync('client/src/public/js/types/commonTypesupport.ts','server/src/types/commonTypesupport.ts')\""
+        "sync:types": "node -e \"require('fs').copyFileSync('client/src/public/js/types/commonTypesupport.ts','server/src/types/commonTypesupport.ts')\"",
+        "prepare": "git config core.hooksPath .githooks || exit 0"
     },
     "author": "Sean Lynch",
     "license": "MIT",
