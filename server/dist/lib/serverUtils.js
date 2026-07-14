@@ -15,6 +15,11 @@ const gOptsCache = new NodeCache({ stdTTL: 10, checkperiod: 600 });
 const okToAdvertiseCache = new NodeCache({ stdTTL: 600, checkperiod: 600 });
 const { logger } = require('../lib/logger');
 const { conf } = require('../lib/configLib');
+// Deployed version — release-please bumps package.json, so it tracks the released tag.
+const { version: appVersion, repository: appRepository } = require('../../../package.json');
+// release-please tags releases as vX.Y.Z; forks without a repository url get no link.
+const repoUrl = (appRepository?.url || '').replace(/^git\+/, '').replace(/\.git$/, '');
+const appVersionUrl = repoUrl ? `${repoUrl}/releases/tag/v${appVersion}` : '';
 const { getFlexOption } = require('../models/flexOptions');
 const { getQrzCache } = require('../models/qrzCache');
 const { getInitialReg } = require('../models/initialRegTracker');
@@ -221,6 +226,8 @@ const addServerInfo = async (req, res, next) => {
                 appLogName,
                 appName,
                 appCallsign,
+                version: appVersion,
+                versionUrl: appVersionUrl,
                 cmdHelpUrl,
                 googleAuth,
                 chatEnabled,

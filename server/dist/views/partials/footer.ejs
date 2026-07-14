@@ -15,6 +15,12 @@
     a self-hosted fork of
     <a href="https://www.ham.live" target="_blank" rel="noopener">Ham.Live</a>
     &middot; MIT License
+    &middot;
+    <% if (server.versionUrl) { %>
+    <a class="hl-footer-version" href="<%= server.versionUrl %>" target="_blank" rel="noopener">v<%= server.version %></a>
+    <% } else { %>
+    <span class="hl-footer-version">v<%= server.version %></span>
+    <% } %>
   </div>
 </footer>
 <!--End: footer.ejs-->
