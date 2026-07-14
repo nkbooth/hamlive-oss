@@ -11,7 +11,8 @@
 # ---- Core ----
 NODE_ENV=production
 PORT=3000
-APP_NAME=Ham.Live @ N1CCK
+APP_NAME=Net Logger
+APP_CALLSIGN=N1CCK
 BASE_URL=https://nets.n1cck.radio
 # TLS terminates at Caddy (on the `routing` host); redirect plain HTTP there.
 FORCE_HTTPS=true
