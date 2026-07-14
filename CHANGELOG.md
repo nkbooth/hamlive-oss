@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/nkbooth/hamlive-oss/compare/v0.9.1...v0.10.0) (2026-07-14)
+
+
+### Features
+
+* **footer:** link the deployed version to its GitHub release ([81a6b27](https://github.com/nkbooth/hamlive-oss/commit/81a6b27ed71aa466c4c9e980551579df973692c2))
+* **mynets:** replace TinyMCE with self-hosted Toast UI Editor ([49f59a5](https://github.com/nkbooth/hamlive-oss/commit/49f59a5fb6cfec7008e3e64350e89e47840bb547))
+
 ## [0.9.1](https://github.com/nkbooth/hamlive-oss/compare/v0.9.0...v0.9.1) (2026-07-14)
 
 
