@@ -110,3 +110,6 @@ test.js
 
 # Local DB backup archives produced by server/dist/bin/dbBackup.js
 backups/
+
+# Local dev TLS cert (generate with `npm run gen-certs`) — never commit keys
+server/dist/ssl/*.pem
