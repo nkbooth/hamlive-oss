@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Pre-push gate — everything runs in one-shot containers (no host toolchains):
+#   1. test suite        (node:22)
+#   2. CVE / secret / misconfig scan   (trivy, HIGH+CRITICAL fail the push)
+#   3. static analysis   (semgrep, ERROR severity fails the push)
+# Emergency bypass: `git push --no-verify`.
+set -euo pipefail
+
+repo="$(git rev-parse --show-toplevel)"
+
+engine="$(command -v podman || command -v docker || true)"
+if [ -z "$engine" ]; then
+    echo "pre-push: podman (or docker) is required to run the scan containers" >&2
+    exit 1
+fi
+
+echo "pre-push: test suite"
+"$engine" run --rm --security-opt label=disable \
+    -v "$repo:/repo:ro" -w /repo \
+    docker.io/library/node:22-bookworm-slim \
+    node --test "test/**/*.test.mjs"
+
+echo "pre-push: trivy scan (CVEs, secrets, misconfig)"
+trivy_cache="${XDG_CACHE_HOME:-$HOME/.cache}/trivy"
+mkdir -p "$trivy_cache"
+"$engine" run --rm --security-opt label=disable \
+    -v "$repo:/repo:ro" \
+    -v "$trivy_cache:/root/.cache/trivy" \
+    docker.io/aquasec/trivy:latest fs \
+    --scanners vuln,secret,misconfig \
+    --severity HIGH,CRITICAL \
+    --skip-dirs node_modules \
+    --skip-dirs server/dist/ssl \
+    --exit-code 1 \
+    /repo
+
+echo "pre-push: semgrep static analysis"
+"$engine" run --rm --security-opt label=disable \
+    -v "$repo:/src:ro" \
+    docker.io/semgrep/semgrep:latest \
+    semgrep scan --config p/javascript --config p/typescript \
+    --severity ERROR --error --quiet
+
+echo "pre-push: all gates passed"

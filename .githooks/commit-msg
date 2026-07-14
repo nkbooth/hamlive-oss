@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Enforce Conventional Commits locally — release-please derives semver from
+# these headers (fix → patch, feat → minor, `!`/BREAKING CHANGE → major), so a
+# malformed header silently breaks version calculation.
+set -euo pipefail
+
+header="$(head -n1 "$1")"
+
+# Git-generated headers that are exempt from the convention.
+case "$header" in
+    Merge\ * | Revert\ \"* | fixup!\ * | squash!\ *) exit 0 ;;
+esac
+
+pattern='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-zA-Z0-9./_-]+\))?!?: .+'
+if ! grep -qE "$pattern" <<< "$header"; then
+    {
+        echo "commit-msg: not a Conventional Commit header:"
+        echo "    $header"
+        echo "expected:  type(scope)?: subject"
+        echo "types:     build chore ci docs feat fix perf refactor revert style test"
+        echo "breaking:  add '!' before ':' or a 'BREAKING CHANGE:' footer"
+    } >&2
+    exit 1
+fi
